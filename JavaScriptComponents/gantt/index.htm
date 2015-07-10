@@ -1,0 +1,320 @@
+﻿<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8" /> 
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    
+    <title>Test</title>
+    
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <style type="text/css" media="all">
+		html,body
+		{
+			margin: 5px;
+			padding: 0px;
+			width:100%;
+			height: 100%;
+		}
+    
+    </style>
+    
+    
+    <script src="colorTools.js"></script>
+    <script src="svg.js"></script>
+    <script src="gantt.js"></script>
+    
+    
+	<!--
+    <link rel="stylesheet" href="css/main.css">
+    <script src="d3.min.js"></script>
+    -->
+    
+    <script type="text/javascript">
+        
+    </script>
+    
+</head>
+<body>
+    
+    <script type="text/javascript">
+		
+		function clone(obj) 
+		{
+			if(obj === null || typeof(obj) !== 'object' || 'isActiveClone' in obj)
+				return obj;
+
+			var temp = obj.constructor(); // changed
+
+			for(var key in obj) 
+			{
+				if(Object.prototype.hasOwnProperty.call(obj, key)) 
+				{
+					obj['isActiveClone'] = null;
+					temp[key] = clone(obj[key]);
+					delete obj['isActiveClone'];
+				}
+			}    
+
+			return temp;
+		}
+		
+		
+		var taskData = [
+			{
+				user:
+				{
+					 userid: 123 
+					,username: "Ruedi Angehrn" 
+				}
+				,tasks: [
+					{
+						 TSK_UID: 1 
+						,TSK_Desk: "Don't do this" 
+						,TSK_From: "2015-01-01" 
+						,TSK_To: "2015-02-01" 
+					}
+					,
+					{
+						 TSK_UID: 2 
+						,TSK_Desc: "Don't do that" 
+						,TSK_From: "2015-05-01" 
+						,TSK_To: "2015-08-01" 
+					}
+				]
+			}
+			
+			,
+			{
+				user:
+				{
+					 userid: 456 
+					,username: "Pablo Picasso" 
+				}
+				,tasks: [
+					{
+						 TSK_UID: 3 
+						,TSK_Desk: "Do this" 
+						,TSK_From: "2015-01-01" 
+						,TSK_To: "2015-02-01" 
+					}
+					,
+					{
+						 TSK_UID: 4 
+						,TSK_Desc: "Do that" 
+						,TSK_From: "2015-05-01" 
+						,TSK_To: "2015-08-01" 
+					}
+				]
+			}
+			
+			
+			,
+			{
+				user:
+				{
+					 userid: 456 
+					,username: "Vincent van Gogh" 
+				}
+				,tasks: [
+					{
+						 TSK_UID: 3 
+						,TSK_Desk: "Do this" 
+						,TSK_From: "2015-01-01" 
+						,TSK_To: "2015-02-01" 
+					}
+					,
+					{
+						 TSK_UID: 4 
+						,TSK_Desc: "Do that" 
+						,TSK_From: "2015-05-01" 
+						,TSK_To: "2015-08-01" 
+					}
+					,
+					{
+						 TSK_UID: 5 
+						,TSK_Desc: "Do that" 
+						,TSK_From: "2014-05-01" 
+						,TSK_To: "2014-12-31" 
+					}
+					
+					,
+					{
+						 TSK_UID: 6 
+						,TSK_Desc: "Do that" 
+						,TSK_From: "2014-05-01" 
+						,TSK_To: "2015-05-31" 
+					}
+				]
+			}
+		];
+		
+		
+		for(i=0; i < 5; ++i)
+		{
+			var omg = clone(taskData[0]);
+			omg.user.username = "User " +(i+1);
+			omg.user.userid = (i+1)* 1000;;
+			taskData.push(omg);
+		}
+		
+		
+		var ganttConfig = {
+			 width:  600
+			,height: 250
+			
+			
+			,i18n:
+			{
+				// months: ["", "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember" ]
+				 months: ["", "Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sept", "Okt", "Nov", "Dez" ]
+				,monthNames: [
+					"January", "February", "March", "April", "May", "June", "July", 
+					"August", "September", "October", "November", "December"
+				]
+			}
+			
+			,axis: 
+			{
+				x:
+				{
+					 show: true 
+					,withTicks: true 
+					,withLabel: true 
+					,label: "X-Axis" 
+					,color: "red" 
+					
+					,domain:
+					{
+						 start: new Date(2015, 00, 01) //  /Date(1224043200000)/
+						,end: new Date(2015, 11, 31)
+					}
+					
+					,labels: []
+					
+					,ticks:
+					{ 
+						 size: 5 
+						,color: "red" 
+							
+						,text: 
+						{
+							 //"stroke": "none"
+							//,"stroke-width": "2px"
+							 "font-family": "Verdana"
+							,"font-size": "12px"
+							,"fill": "red"
+							,"text-anchor": "middle"
+							,"dy": "0.4em"
+						}
+					} // End obj ticks
+					
+					,start:
+					{
+						 x: 110
+						,y: 200
+					}
+					
+					,end:
+					{
+						 x: 590
+						,y: 200
+					}
+					
+				}
+				,y:
+				{
+					 show: true 
+					,withTicks: true 
+					,withLabel: true 
+					,label: "Y-Axis"
+					,color: "green"
+					
+					,ticks:
+					{ 
+						 size: 5 
+						,color: "green"
+						
+						,text: 
+						{
+							 "font-family": "Verdana"
+							,"font-size": "12px"
+							,"fill": "green"
+							,"text-anchor": "end"
+							,"dy": "+0.31em"
+							//,"dominant-baseline": "middle"
+						}
+					} // End obj ticks
+					 
+					,start:
+					{
+						 x: 110
+						,y: 10
+					}
+					
+					,end:
+					{
+						 x: 110
+						,y: 200
+					}
+					
+				}
+			}
+		};
+		
+		/*
+		ganttConfig.axis.x.domain.start = "/Date(1420066800000)/";
+		ganttConfig.axis.x.domain.end = "/Date(1451516400000)/";
+		
+		console.log("before");
+		ganttConfig = JSON.parse( JSON.stringify(ganttConfig) )
+		console.log("after");
+		console.log(ganttConfig);
+		*/
+		
+		
+		// var start = new Date(2015, 00, 01) //  /Date(1224043200000)/
+		// var end = new Date(2015, 11, 31)
+		
+		
+		////////////// End Gantt config
+		
+		
+		var gantt = new cGantt(document.body, "gcTasks", ganttConfig, taskData);
+		
+		// console.log(gantt.serialize());
+		
+        
+        // Calculating analogs is done by rotating 30 degrees around the color wheel in each direction from the starting color, 
+        // looping around if the rotation goes over 360 or below 0 degrees.
+        
+        // http://stackoverflow.com/questions/19388014/create-complementary-triad-and-monochromatic-color-palette-from-single-hex-col
+        
+		function moveToNewLine()
+		{
+			var clr = document.createElement("div");
+			clr.setAttribute("style", "clear: both;");
+			document.body.appendChild(clr);
+		}
+		
+		function appendColorDiv(color, circ)
+		{
+			var abc = document.createElement("div");
+			abc.setAttribute("style", "width: 1cm; height: 1cm; margin: 5px; display: block; float: left; " + (circ ? "border-radius: 0.5cm; " : "") + "background-color: " + color + ";");
+			document.body.appendChild(abc);
+		}
+		
+		var cols = gantt.Methods.generateColors(2, 10);
+		
+		for(j = 0; j < cols.length; ++j)
+		{
+			moveToNewLine();
+			for(i=0; i < cols[j].length; ++i)
+				appendColorDiv( cols[j][i] ,true);
+		}
+		
+    </script>
+    
+</body>
+</html>

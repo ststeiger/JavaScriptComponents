@@ -1,0 +1,1101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+    <title></title>
+    
+    <style type="text/css" media="all">
+		
+        .abbr
+        {
+            display: inline-block;
+            width: 30px;
+            color: #000000;
+            text-align: center;
+            border: 1px solid gray;
+            border-collapse: collapse;
+            margin: -1px 0 0 -1px;
+        }
+        
+        .abbr:hover
+        {
+			background-color: #60AEFF;
+			color: white;
+			cursor: pointer;
+		}
+        
+        .noWK
+        {
+            display: none !important;
+        }
+        
+       
+		.hdH
+		{
+			background-color: skyblue;
+			font-weight: bold;
+			#font-style: italic;
+		}
+
+		.hdV
+		{
+			#background-color: #569BE4;
+			background-color: #60AEFF;
+			font-weight: bold;
+			font-style: italic;
+		}
+
+        .noselect
+        {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .cont .abbr a
+        {
+            text-decoration: none;
+            color: black;
+        }
+
+
+        .cont .abbr.pale a
+        {
+            color: #C4C4C4;
+        }
+
+        .cont .abbr a:focus
+        {
+            background-color: yellow;
+            color: hotpink;
+        }
+
+        .datepicker .today
+        {
+            background-color: palegoldenrod;
+        }
+        
+    </style>
+    
+
+    <style type="text/css">
+        .button
+        {
+            display: table;
+            width: 100%;
+        }
+
+        .button > div
+        {
+            display: table-cell;
+            text-align: center;
+            background: lightblue;
+        }
+
+        .chYear
+        {
+            width: 20px;
+            line-height: 25px;
+        }
+
+
+        .chMonth
+        {
+            width: 20px;
+            line-height: 25px;
+        }
+
+
+        .divSels
+        {
+            vertical-align: middle;
+        }
+
+        select
+        {
+            margin: 0px;
+            padding: 0px;
+            height: 25px;
+        }
+
+        *
+        {
+            font-size: 12px;
+            font-family: Verdana;
+        }
+    </style>
+
+</head>
+<body>
+	
+    <script type="text/javascript">
+		
+        // https://github.com/datejs/Datejs/blob/master/src/globalization/en-US.js
+        var $i18n =
+        {
+            // dayNames
+            dN: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            // abbreviatedDayNames
+            aD: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+            // shortestDayNames: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+            // firstLetterDayNames: ["S", "M", "T", "W", "T", "F", "S"],
+
+            // MonthNames
+            mN: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+
+            // Abbreviated MonthNames
+            aM: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+
+            // AM/PM designators
+            am: "AM",
+            pm: "PM",
+        };
+
+        var $i18n =
+        {
+            // dayNames
+            dN: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+            // abbreviatedDayNames
+            aD: ["Son", "Mon", "Die", "Mit", "Don", "Fre", "Sam"],
+            // shortestDayNames: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+            // firstLetterDayNames: ["S", "M", "T", "W", "T", "F", "S"],
+
+            // MonthNames
+            mN: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+
+            // Abbreviated MonthNames
+            aM: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+
+            // AM/PM designators
+            am: "AM",
+            pm: "PM",
+        };
+
+
+
+        var stringFormater =
+        {
+            // Pad number with "0"
+            p: function (val, len)
+            {
+                val = String(val);
+                len = len || 2;
+                while (val.length < len) val = "0" + val;
+                return val;
+            }
+
+            // Pad Milliseconds with nx"0"
+            , mp: function (d, n)
+            {
+                var i = 3, res = this.p(d.getMilliseconds(), 3).substr(0, n);
+
+                for (; i < n; ++i)
+                    res += "0";
+
+                return res;
+            }
+
+            , tzo: function (d)
+            {
+                var o = d.getTimezoneOffset();
+                return (o > 0 ? "-" : "+") + this.p(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4)
+            }
+
+            , tz: function (date)
+            {
+                var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+                timezoneClip = /[^-+\dA-Z]/g;
+                return (String(date).match(timezone) || [""]).pop().replace(timezoneClip, "");
+            }
+
+            , ord: function (num)
+            {
+                if (num <= 0)
+                    return num.toString();
+
+                switch (num % 100)
+                {
+                    case 11:
+                    case 12:
+                    case 13:
+                        return num + "th";
+                }
+
+                switch (num % 10)
+                {
+                    case 1:
+                        return num + "st";
+                    case 2:
+                        return num + "nd";
+                    case 3:
+                        return num + "rd";
+                    default:
+                        return num + "th";
+                }
+
+            } // End Function ord
+
+            , "format": function (str, o)
+            {
+                if (!str || !o)
+                    return str;
+
+                str = str.toString();
+
+                for (var k in o)
+                    str = str.replace(new RegExp("\\{" + k + "\\}", "gi"), o[k]);
+
+                return str
+            } // End Function Format
+
+            , "formatDate": function (x, formatString)
+            {
+                // "S dd'd'.MM (MMMM).yyyy ".replace(/(\\)?(dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|S)/g, 
+                return formatString.replace(/d{1,4}|M{1,4}|f{1,7}|yy(?:yy)?|([HhmsTt])\1?|[oSZ]|"[^"]*"|'[^']*'/g,
+                    function (m)
+                    {
+                        var p = this.p
+                            , mp = this.mp.bind(this)
+                            , tzo = this.tzo.bind(this)
+                            , tz = this.tz.bind(this)
+                            , ord = this.ord.bind(this);
+
+                        x.s = x.getSeconds;
+                        x.m = x.getMinutes;
+                        x.h = x.getHours;
+                        x.d = x.getDay;
+                        x.D = x.getDate;
+                        x.M = x.getMonth;
+                        x.y = x.getFullYear;
+
+                        if (m.charAt(0) === "\\")
+                        {
+                            return m.replace("\\", "");
+                        }
+
+                        switch (m)
+                        {
+                            case "hh":
+                                return p(x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12));
+                            case "h":
+                                return x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12);
+                            case "HH":
+                                return p(x.h());
+                            case "H":
+                                return x.h();
+                            case "mm":
+                                return p(x.m());
+                            case "m":
+                                return x.m();
+                            case "ss":
+                                return p(x.s());
+                            case "s":
+                                return x.s();
+                            case "yyyy":
+                                return p(x.y(), 4);
+                            case "yy":
+                                return p(x.y());
+                            case "dddd":
+                                return $i18n.dN[x.d()];
+                            case "ddd":
+                                return $i18n.aD[x.d()];
+                            case "dd":
+                                return p(x.D());
+                            case "d":
+                                return x.D();
+                            case "MMMM":
+                                return $i18n.mN[x.M()];
+                            case "MMM":
+                                return $i18n.aM[x.M()];
+                            case "MM":
+                                return p((x.M() + 1));
+                            case "M":
+                                return x.M() + 1;
+                            case "t":
+                                return (x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1)).toLowerCase();
+                            case "tt":
+                                return (x.h() < 12 ? $i18n.am : $i18n.pm).toLowerCase();;
+                            case "T":
+                                return x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1);
+                            case "TT":
+                                return x.h() < 12 ? $i18n.am : $i18n.pm;
+                            case "S":
+                                return ord(x.D());
+                            case "fffffff":
+                                return mp(x, 7);
+                            case "ffffff":
+                                return mp(x, 6);
+                            case "fffff":
+                                return mp(x, 5);
+                            case "ffff":
+                                return mp(x, 4);
+                            case "fff":
+                                return mp(x, 3);
+                            case "ff":
+                                return mp(x, 2);
+                            case "f":
+                                return mp(x, 1);
+                            case "o":
+                                return tzo(x);
+                            case "Z":
+                                return tz(x);
+                            default:
+                                return m;
+                        } // End Switch
+                    } // End Fn
+                    .bind(this)
+                    //.apply(this, arguments)
+                );
+            }
+
+        };
+
+
+var HtmlTools =
+    {
+        
+        "DomReady": function(a,b,c)
+        {
+            b=document,c='addEventListener';
+            b[c]? b[c]('DOMContentLoaded', a) : window.attachEvent('onload', a)
+        }
+
+        // dispatch event cross browser
+        ,"dispatchEvent": function(el, e)
+        {
+            // console.log("dispatching");
+            
+            if ("createEvent" in document)
+            {
+                var evt = document.createEvent("HTMLEvents");
+                evt.initEvent(e, false, true);
+                el.dispatchEvent(evt);
+            }
+            else
+            {
+                el.fireEvent("on" + e);
+            }
+                
+        }
+
+        // add event cross browser
+        // HtmlTools(elem, "click", function(evt){});
+        ,"addEvent": function(elem, event, fn)
+        {
+            if (elem.addEventListener)
+                elem.addEventListener(event, fn, false);
+            else
+            {
+                elem.attachEvent("on" + event, function ()
+                {
+                    // set the this pointer same as addEventListener when fn is called
+                    return (fn.call(elem, window.event));
+                });
+            }
+        }
+        
+        // Populate dropdown with data
+        ,"popDrop": function (sel, data)
+        {
+            // console.log(data);
+
+            if (typeof sel === 'string' || sel instanceof String)
+                sel = document.getElementById(sel);
+
+            sel.options.length = 0; // clear out existing items
+
+            var ogl = sel.getElementsByTagName('optgroup');
+            for (var i = ogl.length - 1; i >= 0; i--)
+                sel.removeChild(ogl[i]);
+            
+            
+            var docfrag = document.createDocumentFragment();
+
+            // var combinationGroup = document.createElement("optgroup");
+            // combinationGroup.label = GroupName;
+            
+            // var data = [{ t: "Internet Explorer", v: "MSFT" }, { t: "Mozilla Firefox", v: "MOZ" }, { t: "Safari", v: "AAPL" }, { t: "Chrome", v: "GOOG" }, { t: "Opera", v: "O" }];
+            for (var i = 0; i < data.length; i++)
+            {
+                // opts.push('<option value="' + value.abc + '" text="' + value.abc + '" />');
+                // var opt = document.createElement('option');
+                // opt.value = cuisines[i];
+                // if (opt.textContent) opt.textContent = cuisines[i];
+                // else opt.innerText = cuisines[i];
+                
+                var d = data[i];
+                var opt = new Option(d.t, d.v, d.s, d.s);
+                docfrag.appendChild(opt);
+                // sel.appendChild(opt);
+            } // Next i 
+
+            sel.appendChild(docfrag);
+            this.dispatchEvent(sel, "change")
+        } // End Function PopDrop
+
+    } // End Obj HtmlTools
+;
+
+
+			
+var blob =
+    {
+        
+        selectByText: function(dd, textToFind)
+        {
+			if(!dd)
+				return;
+				
+            if(textToFind && typeof(textToFind) !== "string")
+                textToFind = textToFind.toString();
+				
+            if(typeof(dd) === "string")
+                dd = document.getElementById(dd);
+				
+            var i;
+            for (i = 0; i < dd.options.length; i++) 
+            {
+                if (dd.options[i].text === textToFind) 
+                {
+                    dd.selectedIndex = i;
+                    break;
+                }
+            } // Next i	
+        } // End Sub selectByText 
+			
+        ,getSelectedOptions: function(select) 
+        {
+            // document.querySelectorAll('option:checked')
+				
+            var result = [];
+            var options = select.getElementsByTagName('option');
+            for (var i = 0; i < options.length; i++) 
+            {
+                if (options[i].selected)
+                    result.push(options[i]);
+            };
+            return result;
+        }
+
+    };
+
+
+			
+            
+            var reg_de_CH =
+            {
+                closeText: 'schliessen',
+                prevText: '&#x3c;zurück',
+                nextText: 'Vor&#x3e;',
+                currentText: 'heute',
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                week: 'Kalenderwoche',
+                calendarWeek: 'Kalenderwoche',
+                weekHeader: 'Wo',
+                dateFormat: 'dd.mm.yy',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''
+            };
+            
+            var reg_fr_CH =
+            {
+                closeText: 'Fermer',
+                prevText: '&#x3c;Pr\E9c',
+                nextText: 'Suiv&#x3e;',
+                currentText: 'Courant',
+                monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+                monthNamesShort: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
+                dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+                dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+                dayNamesMin: ['Di', 'Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa'],
+                week: 'Semaine',
+                calendarWeek: 'Semaine Calendrier',
+                weekHeader: 'Sm',
+                dateFormat: 'dd.mm.yy',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''
+            };
+            
+            var reg_it_CH =
+            {
+                closeText: 'Chiudi',
+                prevText: '&#x3c;Prec',
+                nextText: 'Succ&#x3e;',
+                currentText: 'Oggi',
+                monthNames: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                monthNamesShort: ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'],
+                dayNames: ['Domenica', 'Luned&#236', 'Marted&#236', 'Mercoled&#236', 'Gioved&#236', 'Venerd&#236', 'Sabato'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'],
+                dayNamesMin: ['Do', 'Lu', 'Ma', 'Me', 'Gi', 'Ve', 'Sa'],
+                week: 'Settimana',
+                calendarWeek: 'Settimana Calendario',
+                weekHeader: 'Sm',
+                dateFormat: 'dd.mm.yy',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''
+            };
+            
+            var reg_en_GB =
+            {
+                closeText: 'Done',
+                prevText: 'Prev',
+                nextText: 'Next',
+                currentText: 'Today',
+                monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                dayNamesMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+                week: 'Week',
+                calendarWeek: 'Calendar Week',
+                weekHeader: 'Wk',
+                dateFormat: 'dd/mm/yy', // US: mm/dd/yy
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: ''
+            };
+			
+			
+			function dh()
+			{
+				var obj = {
+					
+					jsDate: function(year, month, day)
+					{
+						year = parseInt(year, 10);
+						month = parseInt(month, 10);
+						day = parseInt(day, 10);
+
+						return new Date(year, month - 1, day)
+					}
+					
+					// d: date
+					// i: numberOfDaysToAdd
+					,addDays: function(d, i)
+					{
+						//d.setDate(d.getDate() + parseInt(i, 10));
+						// return d;
+						var d2 = new Date(d.getTime())
+						d2.setDate(d2.getDate() + parseInt(i, 10));
+
+						return d2;
+					}
+					
+					// http://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
+					,daysInMonth: function(month, year)
+					{
+						return new Date(year, month, 0).getDate();
+					}
+					
+					,getFirstDayOfMonth: function(year, month)
+					{
+						return (new Date(2015, i - 1, 1));
+					}
+					
+					,getWeekDay: function(year, month)
+					{
+						var d = getFirstDayOfMonth(year, month);
+						var n = d.getDay();
+						return reg.dayNames[n];
+					}
+					
+					,getWeekDayOrdinal: function(year, month)
+					{
+						var d = getFirstDayOfMonth(year, month);
+						var n = d.getDay();
+						if (n == 0)
+							return 7;
+						return n;
+					}
+					
+					,IsoWeek: function(d)
+					{
+						// Create a copy of this date object
+						var target = new Date(d.valueOf());
+
+						// ISO week date weeks start on monday
+						// so correct the day number
+						var dayNr = (d.getDay() + 6) % 7;
+
+						// ISO 8601 states that week 1 is the week
+						// with the first thursday of that year.
+						// Set the target date to the thursday in the target week
+						target.setDate(target.getDate() - dayNr + 3);
+
+						// Store the millisecond value of the target date
+						var firstThursday = target.valueOf();
+
+						// Set the target to the first thursday of the year
+						// First set the target to january first
+						target.setMonth(0, 1);
+						// Not a thursday? Correct the date to the next thursday
+						if (target.getDay() != 4)
+						{
+							target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+						}
+
+						// The weeknumber is the number of weeks between the
+						// first thursday of the year and the thursday in the target week
+						return 1 + Math.ceil((firstThursday - target) / 604800000); // 604800000 = 7 * 24 * 3600 * 1000
+					}
+					
+					,IsoWeekYear: function(d)
+					{
+						// Create a new date object for the thursday of this week
+						var target = new Date(d.valueOf());
+						target.setDate(target.getDate() - ((d.getDay() + 6) % 7) + 3);
+
+						return target.getFullYear();
+					}
+					
+					// http://stackoverflow.com/questions/16590500/javascript-calculate-date-from-week-number
+					,ISOWeekStartDate: function(w, y)
+					{
+						if (typeof (y) === 'undefined')
+						{
+							var d = w;
+							w = obj.IsoWeek(d);
+							y = obj.IsoWeekYear(d);
+						}
+						
+						var simple = new Date(y, 0, 1 + (w - 1) * 7);
+						var dow = simple.getDay();
+						var ISOweekStart = simple;
+						
+						if (dow <= 4)
+							ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+						else
+							ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+
+						return ISOweekStart;
+					}
+					
+					///////////////////////////////////////
+				};
+					
+				return obj;
+			}
+            
+            
+        /*
+        for (i = 1; i < 13; ++i)
+        {
+            console.log(reg.monthNames[i - 1] + ": " + daysInMonth(i-1, 2015));
+
+            // console.log(getWeekDay(2015, i));
+            // console.log(getWeekDayOrdinal(2015, i));
+        }
+        */
+
+            
+            function cDatePicker()
+            {
+				var ele = function (id) { return document.getElementById(id); };
+				var createElement = document.createElement.bind(document);
+				var createTextNode = document.createTextNode.bind(document);
+				var appendChild = function (el, child) { el.appendChild(child); };
+				
+				var withWK = true;
+                var reg = reg_de_CH;
+                //var reg = reg_fr_CH;
+                // var reg = reg_it_CH;
+                //var reg = reg_en_GB
+
+				
+				var obj = {
+					 //pickr: document.getElementById("pickr")
+					 pickr: null
+					,hello: "world" 
+					
+					// http://stackoverflow.com/questions/805107/creating-multiline-strings-in-javascripts
+					,datePickerTemplate: (function ()
+{/*
+<div class="button">
+	<div class="chYear noselect" onclick="this.parentElement.parentElement.pickr.idYear(this,-1);" style="background-color: green; float: left;">&#171;</div>
+	<div class="chMonth noselect" onclick="this.parentElement.parentElement.pickr.idMonth(this,-1);" style="background-color: yellow; float: left;">&#8249;</div><!--
+	--><div class="divSels">
+		<select id="selMonth2" class="dpMonth noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();"><option>Januar</option></select>
+		<select id="selYear2" class="dpYear noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();">
+			<option>-&infin;</option>
+			<option>1999</option>
+			<option>2000</option>
+			<option>+&infin;</option>
+		</select>
+	</div><!--
+	--><div class="chYear noselect" onclick="this.parentElement.parentElement.pickr.idYear(this,1);" style="background-color: orange; float: right;">&#187;</div>
+	<div class="chMonth noselect" onclick="this.parentElement.parentElement.pickr.idMonth(this,1);" style="background-color: blue; float: right;">&#8250;</div>
+</div>   
+
+<div style="background-color: brown; height: 2mm;"></div>
+*/}).toString() 
+
+					,getTemplateString: function(t)
+					{
+						// s: Start, t: templateString
+						var s = t.indexOf("/*") + 2;
+						return t.substr(s, t.lastIndexOf("*/") - s);
+					}
+					
+					,idYear: function(el, num)
+					{
+						var selYear = el.parentElement.getElementsByClassName("dpYear")[0];
+						// var selectedNode = elem.options[elem.selectedIndex];
+						var nv = parseInt(selYear.value, 10) + parseInt(num, 10);
+						if (nv < selYear.options[0].value) nv = selYear.options[0].value;
+						if (nv > selYear.options[selYear.options.length - 1].value) nv = selYear.options[selYear.options.length - 1].value;
+						selYear.value = nv;
+						obj.redrawDatePicker();
+					}
+
+					// http://www.elizabethcastro.com/html/extras/entities.html
+					,idMonth: function(el, num)
+					{
+						var selMonth = el.parentElement.getElementsByClassName("dpMonth")[0];
+						var nv = (parseInt(selMonth.value, 10) + parseInt(num, 10));
+
+						if (nv >= selMonth.length)
+						{
+							obj.idYear(el, 1);
+							nv %= selMonth.length;
+						}
+
+						if (nv < 0)
+						{
+							obj.idYear(el, -1);
+							nv = selMonth.length + nv;
+						}
+						
+						selMonth.value = nv;
+						obj.redrawDatePicker();
+					}
+					
+					,onDaySelected: function(el)
+					{
+						// e = e || window.event;
+						// var targ = e.target || e.srcElement;
+						//  if (targ.nodeType == 3) targ = targ.parentNode; // defeat Safari bug
+
+						// console.log(el);
+
+					    var ti = el.getAttribute("data-ticks");
+					    ti = new Date(ti * 1);
+					    console.log(ti);
+					    // console.log(ti.getDate());
+					    // console.log(ti.getMonth());
+					    // console.log(ti.getFullYear());
+
+					    console.log( stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy") );
+					    
+
+						//if (targ.tagName === 'A' && targ.className != null && targ.className.indexOf('hdV') === -1)
+						//{
+							
+						//} // End if (targ.tagName == 'DIV')
+
+					} // End Function 
+					
+					,populateChoices: function()
+					{
+						
+						var dp = obj.pickr;
+						// console.log(dp);
+
+						// var bt = dp.getElementsByClassName("button")[0];
+						// console.log(bt);
+
+						// while (bt.firstChild) bt.removeChild(bt.firstChild);
+						// bt.parentElement.removeChild(bt);
+
+						dp.insertAdjacentHTML("afterbegin", obj.getTemplateString(obj.datePickerTemplate));
+
+						var selMonth = dp.getElementsByClassName("dpMonth")[0];
+						var selYear = dp.getElementsByClassName("dpYear")[0];
+
+						var data = [];
+
+						var nd = new Date();
+						var cM = nd.getMonth();
+						var cY = nd.getFullYear();
+
+						for (var i = 0; i < reg.monthNames.length; ++i)
+						{
+							data.push({ v: i, t: reg.monthNames[i], s: (i === cM ? true : false) });
+						}
+						HtmlTools.popDrop(selMonth, data);
+
+						data.length = 0;
+						for (var i = 1753; i < 3000; ++i)
+						{
+							data.push({ v: i, t: i, s: (i === cY ? true : false) });
+						}
+						HtmlTools.popDrop(selYear, data);
+					}
+					
+					,create: function()
+					{
+						// <div id="pickr" class="datepicker" style="background-color: white; float: left; border: 1px solid black; padding: 5px;" onmouseout="console.log('destroy');">
+						var divPicker = createElement('div');
+						divPicker.className = 'datepicker';
+						divPicker.setAttribute("style", "background-color: white; float: left; border: 1px solid black; padding: 5px;");
+						appendChild(document.body, divPicker);
+						
+						obj.pickr = divPicker;
+						obj.pickr.pickr = obj;
+						
+						obj.populateChoices();
+						obj.redrawDatePicker();
+					}
+					
+					,redrawDatePicker: function()
+					{
+						var dateHelper = new dh();
+						// console.log(dateHelper);
+						
+						// document.getElementsByTagName('body')[0].appendChild(iDiv);
+						var pickr = obj.pickr;
+						
+						var cont = pickr.getElementsByClassName("cont")[0];
+						if (cont)
+							cont.parentElement.removeChild(cont);
+						
+						
+						var selMonth = pickr.getElementsByClassName("dpMonth")[0];
+						var selYear = pickr.getElementsByClassName("dpYear")[0];
+						
+						
+						
+						var now = new Date();
+						var thisMonthNum = now.getMonth();
+						var thisYear = now.getFullYear();
+						var today = new Date(thisYear, thisMonthNum, now.getDate());
+						// console.log(today);
+
+
+						if (selMonth)
+							thisMonthNum = selMonth.value;
+							
+						if (selYear)
+							thisYear = selYear.value;
+						
+						var divContainer = createElement('div');
+						divContainer.className = 'cont noselect';
+						// divContainer.setAttribute('onclick', 'onDaySelected(this);')
+						
+						// console.log(thisYear);
+					    // console.log(thisMonthNum);
+					    // console.log(new Date(thisYear, thisMonthNum, 1));
+						
+						var thisMonth = dateHelper.ISOWeekStartDate(new Date(thisYear, thisMonthNum, 1));
+						// thisMonthNum--;
+						
+						var i, j, k = 0;
+						for (k = 0; k < 7; ++k)
+						{
+							if (k == 0)
+							{
+								for (i = 0; i < 8; ++i)
+								{
+									j = i % 7;
+									//console.log(reg.dayNames[j]);
+									var divAbb = createElement('div');
+									// divAbb.id = 'block';
+									divAbb.className = 'abbr hdH';
+									// divAbb.style.display = "inline-block";
+									// divAbb.style.width = "50px";
+
+									var ct = null;
+									if (i == 0)
+									{
+									    divAbb.className = withWK ? 'abbr hdV' : 'abbr noWK hdV';
+									    ct = createTextNode(reg.weekHeader);
+									    divAbb.title = reg.calendarWeek;
+									}
+									else
+									{
+									    ct = createTextNode(reg.dayNamesMin[j]);
+									    divAbb.title = reg.dayNames[j];
+									}
+									
+									appendChild(divAbb, ct);
+									appendChild(divContainer, divAbb);
+								} // Next i
+
+								continue;
+							} // End if (k == 0) // header
+							
+							var divNewLine = createElement('div');
+							divNewLine.style.clear = "both";
+							appendChild(divContainer, divNewLine);
+
+
+							var divWK = createElement('div');
+							divWK.className = withWK ? 'abbr hdV' : 'abbr noWK hdV';
+							// console.log(withWK);
+
+							var tw = dateHelper.addDays(thisMonth, (k - 1) * 7);
+
+							var ctWK = createTextNode(dateHelper.IsoWeek(tw));
+							appendChild(divWK, ctWK);
+							appendChild(divContainer, divWK);
+
+							for (i = 1; i < 8; ++i)
+							{
+								var divAbb = createElement('div');
+								var td = dateHelper.addDays(thisMonth, (k - 1) * 7 + (i - 1));
+								divAbb.className = thisMonthNum == td.getMonth() ? 'abbr' : 'abbr pale'
+								if (i > 5)
+									divAbb.className += " weekend";
+
+								var ct = createElement("a");
+								ct.setAttribute("href", "#");
+								ct.setAttribute("style", "display: block; width: 100%; height: 100%;");
+								ct.setAttribute("data-ticks", td.getTime());
+								ct.setAttribute("title", stringFormater.formatDate(td, "dddd, dd.MM.yyyy"));
+								ct.setAttribute('onclick', 'this.parentElement.parentElement.parentElement.pickr.onDaySelected(this);');
+								// ct.setAttribute("target", "_blank");
+								
+								if (td.getTime() === today.getTime())
+								{
+								    console.log("setting today")
+								    divAbb.className += " today";
+								}
+
+
+								if (ct.textContent)
+									ct.textContent = td.getDate();
+								else if (ct.innerText)
+									ct.innerText = td.getDate();
+								else
+									ct.innerHTML = td.getDate();
+
+								appendChild(divAbb, ct);
+								appendChild(divContainer, divAbb);
+							} // Next i
+
+						}
+						
+						appendChild(pickr, divContainer);
+					}
+					
+				}; // End obj
+				
+				// console.log(obj.datePickerTemplate);
+				// console.log(obj.getTemplateString(obj.datePickerTemplate));
+				
+				obj.create();
+				return obj;
+			}
+            
+            
+			HtmlTools.DomReady(function ()
+				{
+					console.log("DomReady");
+					// document.getElementById('selYear2').selectedIndex = 15;
+					// console.log(document.getElementById('selYear2').selectedIndex);
+					// console.log(document.getElementById('selYear2').selectedText);
+					
+					var datePicker = new cDatePicker();
+					var datePicker2 = new cDatePicker();
+					// console.log( datePicker );
+					
+					// selectByText("selYear2", 2027);
+					// console.log(document.querySelector("#selYear2 option[text()='2027']"));
+					console.log("Finished DomReady");
+				}
+			);
+        
+        </script>
+        
+        <div style="clear: both; height: 2cm;"></div>
+      
+
+
+
+<script type="text/javascript">
+	
+</script>
+
+
+    <div id="static" class="datepicker" style="background-color: hotpink; float: left; border: 1px solid black; padding: 5px;">
+        <div class="button">
+            <div class="chYear noselect" onclick="console.log('idYear(this,-1)');" style="background-color: green; float: left;">«</div>
+            <div class="chMonth noselect" onclick="console.log('this.parentElement.parentElement.pickr.idMonth(this,-1)');" style="background-color: yellow; float: left;">‹</div>
+            <!--
+            -->
+            <div class="divSels">
+                <select id="selMonth2" class="dpMonth noselect" onchange="console.log('this.parentElement.parentElement.parentElement.pickr.redrawDatePicker()');">
+                    <option value="0">Januar</option>
+                    <option value="1">Februar</option>
+                    <option value="2">März</option>
+                    <option value="3">April</option>
+                    <option value="4">Mai</option>
+                    <option value="5">Juni</option>
+                    <option value="6" selected="">Juli</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">Oktober</option>
+                    <option value="10">November</option>
+                    <option value="11">Dezember</option>
+                </select><!--
+             --><select id="selYear2" class="dpYear noselect" onchange="console.log('this.parentElement.parentElement.parentElement.pickr.redrawDatePicker()');">
+                    <option value="2000">2000</option>
+                    <option value="2001">2001</option>
+                    <option value="2002">2002</option>
+                    <option value="2003">2003</option>
+                    <option value="2004">2004</option>
+                    <option value="2005">2005</option>
+                    <option value="2006">2006</option>
+                    <option value="2007">2007</option>
+                    <option value="2008">2008</option>
+                    <option value="2009">2009</option>
+                    <option value="2010">2010</option>
+                    <option value="2011">2011</option>
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>
+                    <option value="2015" selected="">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+            <!--
+            -->
+            <div class="chYear noselect" onclick="console.log('this.parentElement.parentElement.pickr.idYear(this,1)');" style="background-color: orange; float: right;">»</div>
+            <div class="chMonth noselect" onclick="console.log('this.parentElement.parentElement.pickr.idMonth(this,1)');" style="background-color: blue; float: right;">›</div>
+        </div>
+
+        <div style="background-color: brown; height: 2mm;"></div>
+        <div class="cont noselect"><div class="abbr hdV">Wo</div><div class="abbr hdH">Mo</div><div class="abbr hdH">Di</div><div class="abbr hdH">Mi</div><div class="abbr hdH">Do</div><div class="abbr hdH">Fr</div><div class="abbr hdH">Sa</div><div class="abbr hdH">So</div><div style="clear: both;"></div><div class="abbr hdV">27</div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435528800000" onclick="console.log(this);">29</a></div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435615200000" onclick="console.log(this);">30</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435701600000" onclick="console.log(this);">1</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435788000000" onclick="console.log(this);">2</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435874400000" onclick="console.log(this);">3</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1435960800000" onclick="console.log(this);">4</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436047200000" onclick="console.log(this);">5</a></div><div style="clear: both;"></div><div class="abbr hdV">28</div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436133600000" onclick="console.log(this);">6</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436220000000" onclick="console.log(this);">7</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436306400000" onclick="console.log(this);">8</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436392800000" onclick="console.log(this);">9</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436479200000" onclick="console.log(this);">10</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436565600000" onclick="console.log(this);">11</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436652000000" onclick="console.log(this);">12</a></div><div style="clear: both;"></div><div class="abbr hdV">29</div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436738400000" onclick="console.log(this);">13</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436824800000" onclick="console.log(this);">14</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436911200000" onclick="console.log(this);">15</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1436997600000" onclick="console.log(this);">16</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437084000000" onclick="console.log(this);">17</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437170400000" onclick="console.log(this);">18</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437256800000" onclick="console.log(this);">19</a></div><div style="clear: both;"></div><div class="abbr hdV">30</div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437343200000" onclick="console.log(this);">20</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437429600000" onclick="console.log(this);">21</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437516000000" onclick="console.log(this);">22</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437602400000" onclick="console.log(this);">23</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437688800000" onclick="console.log(this);">24</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437775200000" onclick="console.log(this);">25</a></div><div class="abbr weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437861600000" onclick="console.log(this);">26</a></div><div style="clear: both;"></div><div class="abbr hdV">31</div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1437948000000" onclick="console.log(this);">27</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438034400000" onclick="console.log(this);">28</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438120800000" onclick="console.log(this);">29</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438207200000" onclick="console.log(this);">30</a></div><div class="abbr"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438293600000" onclick="console.log(this);">31</a></div><div class="abbr pale weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438380000000" onclick="console.log(this);">1</a></div><div class="abbr pale weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438466400000" onclick="console.log(this);">2</a></div><div style="clear: both;"></div><div class="abbr hdV">32</div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438552800000" onclick="console.log(this);">3</a></div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438639200000" onclick="console.log(this);">4</a></div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438725600000" onclick="console.log(this);">5</a></div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438812000000" onclick="console.log(this);">6</a></div><div class="abbr pale"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438898400000" onclick="console.log(this);">7</a></div><div class="abbr pale weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1438984800000" onclick="console.log(this);">8</a></div><div class="abbr pale weekend"><a href="#" style="display: block; width: 100%; height: 100%;" data-ticks="1439071200000" onclick="console.log(this);">9</a></div></div>
+    </div>
+    
+    <div style="clear: both" >&nbsp;</div>
+    
+</body>
+</html>
