@@ -99,17 +99,17 @@ console.out("%6#16d".$("affe")); // ' 45054'
 
 
 
-function formatUnicorn(in) 
+function formatUnicorn(input, obj) 
 {
-	var str = in.toString();
-	if (!arguments.length) 
+    var str = input.toString();
+	if (obj == null) 
 		return str;
 	
-	var t = typeof arguments[0],
-	    args = "string" == t || "number" == t ? Array.prototype.slice.call(arguments) : arguments[0];
-	
-	for (var arg in args) 
-	     str = str.replace(new RegExp("\\{" + arg + "\\}", "gi"), args[arg]);
+	for (var key in obj) 
+	    str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), obj[key]);
 	
 	return str
 }
+
+formatUnicorn("hello {me}", {me: "world"}) 
+//formatUnicorn("hello {me}") 

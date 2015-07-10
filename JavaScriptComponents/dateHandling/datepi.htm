@@ -1,7 +1,13 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<meta charset="utf-8" />
+    <meta http-equiv="cache-control" content="max-age=0" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+    <meta http-equiv="pragma" content="no-cache" />
     <title></title>
     
     <style type="text/css" media="all">
@@ -176,182 +182,182 @@
 
 
 
-        var stringFormater =
+var stringFormater =
+{
+    // Pad number with "0"
+    p: function (val, len)
+    {
+        val = String(val);
+        len = len || 2;
+        while (val.length < len) val = "0" + val;
+        return val;
+    }
+
+    // Pad with n "0"-chars
+    , mp: function (d, n)
+    {
+        var i = 3, res = this.p(d.getMilliseconds(), 3).substr(0, n);
+
+        for (; i < n; ++i)
+            res += "0";
+
+        return res;
+    }
+
+    , tzo: function (d)
+    {
+        var o = d.getTimezoneOffset();
+        return (o > 0 ? "-" : "+") + this.p(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4)
+    }
+
+    , tz: function (date)
+    {
+        var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+        timezoneClip = /[^-+\dA-Z]/g;
+        return (String(date).match(timezone) || [""]).pop().replace(timezoneClip, "");
+    }
+
+    , ord: function (num)
+    {
+        if (num <= 0)
+            return num.toString();
+
+        switch (num % 100)
         {
-            // Pad number with "0"
-            p: function (val, len)
+            case 11:
+            case 12:
+            case 13:
+                return num + "th";
+        }
+
+        switch (num % 10)
+        {
+            case 1:
+                return num + "st";
+            case 2:
+                return num + "nd";
+            case 3:
+                return num + "rd";
+            default:
+                return num + "th";
+        }
+
+    } // End Function ord
+
+    , "format": function (str, o)
+    {
+        if (!str || !o)
+            return str;
+
+        str = str.toString();
+
+        for (var k in o)
+            str = str.replace(new RegExp("\\{" + k + "\\}", "gi"), o[k]);
+
+        return str
+    } // End Function Format
+
+    , "formatDate": function (x, formatString)
+    {
+        // "S dd'd'.MM (MMMM).yyyy ".replace(/(\\)?(dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|S)/g, 
+        return formatString.replace(/d{1,4}|M{1,4}|f{1,7}|yy(?:yy)?|([HhmsTt])\1?|[oSZ]|"[^"]*"|'[^']*'/g,
+            function (m)
             {
-                val = String(val);
-                len = len || 2;
-                while (val.length < len) val = "0" + val;
-                return val;
-            }
+                var p = this.p
+                    , mp = this.mp.bind(this)
+                    , tzo = this.tzo.bind(this)
+                    , tz = this.tz.bind(this)
+                    , ord = this.ord.bind(this);
 
-            // Pad Milliseconds with nx"0"
-            , mp: function (d, n)
-            {
-                var i = 3, res = this.p(d.getMilliseconds(), 3).substr(0, n);
+                x.s = x.getSeconds;
+                x.m = x.getMinutes;
+                x.h = x.getHours;
+                x.d = x.getDay;
+                x.D = x.getDate;
+                x.M = x.getMonth;
+                x.y = x.getFullYear;
 
-                for (; i < n; ++i)
-                    res += "0";
-
-                return res;
-            }
-
-            , tzo: function (d)
-            {
-                var o = d.getTimezoneOffset();
-                return (o > 0 ? "-" : "+") + this.p(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4)
-            }
-
-            , tz: function (date)
-            {
-                var timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
-                timezoneClip = /[^-+\dA-Z]/g;
-                return (String(date).match(timezone) || [""]).pop().replace(timezoneClip, "");
-            }
-
-            , ord: function (num)
-            {
-                if (num <= 0)
-                    return num.toString();
-
-                switch (num % 100)
+                if (m.charAt(0) === "\\")
                 {
-                    case 11:
-                    case 12:
-                    case 13:
-                        return num + "th";
+                    return m.replace("\\", "");
                 }
 
-                switch (num % 10)
+                switch (m)
                 {
-                    case 1:
-                        return num + "st";
-                    case 2:
-                        return num + "nd";
-                    case 3:
-                        return num + "rd";
+                    case "hh":
+                        return p(x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12));
+                    case "h":
+                        return x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12);
+                    case "HH":
+                        return p(x.h());
+                    case "H":
+                        return x.h();
+                    case "mm":
+                        return p(x.m());
+                    case "m":
+                        return x.m();
+                    case "ss":
+                        return p(x.s());
+                    case "s":
+                        return x.s();
+                    case "yyyy":
+                        return p(x.y(), 4);
+                    case "yy":
+                        return p(x.y());
+                    case "dddd":
+                        return $i18n.dN[x.d()];
+                    case "ddd":
+                        return $i18n.aD[x.d()];
+                    case "dd":
+                        return p(x.D());
+                    case "d":
+                        return x.D();
+                    case "MMMM":
+                        return $i18n.mN[x.M()];
+                    case "MMM":
+                        return $i18n.aM[x.M()];
+                    case "MM":
+                        return p((x.M() + 1));
+                    case "M":
+                        return x.M() + 1;
+                    case "t":
+                        return (x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1)).toLowerCase();
+                    case "tt":
+                        return (x.h() < 12 ? $i18n.am : $i18n.pm).toLowerCase();;
+                    case "T":
+                        return x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1);
+                    case "TT":
+                        return x.h() < 12 ? $i18n.am : $i18n.pm;
+                    case "S":
+                        return ord(x.D());
+                    case "fffffff":
+                        return mp(x, 7);
+                    case "ffffff":
+                        return mp(x, 6);
+                    case "fffff":
+                        return mp(x, 5);
+                    case "ffff":
+                        return mp(x, 4);
+                    case "fff":
+                        return mp(x, 3);
+                    case "ff":
+                        return mp(x, 2);
+                    case "f":
+                        return mp(x, 1);
+                    case "o":
+                        return tzo(x);
+                    case "Z":
+                        return tz(x);
                     default:
-                        return num + "th";
-                }
+                        return m;
+                } // End Switch
+            } // End Fn
+            .bind(this)
+            //.apply(this, arguments)
+        );
+    }
 
-            } // End Function ord
-
-            , "format": function (str, o)
-            {
-                if (!str || !o)
-                    return str;
-
-                str = str.toString();
-
-                for (var k in o)
-                    str = str.replace(new RegExp("\\{" + k + "\\}", "gi"), o[k]);
-
-                return str
-            } // End Function Format
-
-            , "formatDate": function (x, formatString)
-            {
-                // "S dd'd'.MM (MMMM).yyyy ".replace(/(\\)?(dd?d?d?|MM?M?M?|yy?y?y?|hh?|HH?|mm?|ss?|tt?|S)/g, 
-                return formatString.replace(/d{1,4}|M{1,4}|f{1,7}|yy(?:yy)?|([HhmsTt])\1?|[oSZ]|"[^"]*"|'[^']*'/g,
-                    function (m)
-                    {
-                        var p = this.p
-                            , mp = this.mp.bind(this)
-                            , tzo = this.tzo.bind(this)
-                            , tz = this.tz.bind(this)
-                            , ord = this.ord.bind(this);
-
-                        x.s = x.getSeconds;
-                        x.m = x.getMinutes;
-                        x.h = x.getHours;
-                        x.d = x.getDay;
-                        x.D = x.getDate;
-                        x.M = x.getMonth;
-                        x.y = x.getFullYear;
-
-                        if (m.charAt(0) === "\\")
-                        {
-                            return m.replace("\\", "");
-                        }
-
-                        switch (m)
-                        {
-                            case "hh":
-                                return p(x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12));
-                            case "h":
-                                return x.h() < 13 ? (x.h() === 0 ? 12 : x.h()) : (x.h() - 12);
-                            case "HH":
-                                return p(x.h());
-                            case "H":
-                                return x.h();
-                            case "mm":
-                                return p(x.m());
-                            case "m":
-                                return x.m();
-                            case "ss":
-                                return p(x.s());
-                            case "s":
-                                return x.s();
-                            case "yyyy":
-                                return p(x.y(), 4);
-                            case "yy":
-                                return p(x.y());
-                            case "dddd":
-                                return $i18n.dN[x.d()];
-                            case "ddd":
-                                return $i18n.aD[x.d()];
-                            case "dd":
-                                return p(x.D());
-                            case "d":
-                                return x.D();
-                            case "MMMM":
-                                return $i18n.mN[x.M()];
-                            case "MMM":
-                                return $i18n.aM[x.M()];
-                            case "MM":
-                                return p((x.M() + 1));
-                            case "M":
-                                return x.M() + 1;
-                            case "t":
-                                return (x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1)).toLowerCase();
-                            case "tt":
-                                return (x.h() < 12 ? $i18n.am : $i18n.pm).toLowerCase();;
-                            case "T":
-                                return x.h() < 12 ? $i18n.am.substring(0, 1) : $i18n.pm.substring(0, 1);
-                            case "TT":
-                                return x.h() < 12 ? $i18n.am : $i18n.pm;
-                            case "S":
-                                return ord(x.D());
-                            case "fffffff":
-                                return mp(x, 7);
-                            case "ffffff":
-                                return mp(x, 6);
-                            case "fffff":
-                                return mp(x, 5);
-                            case "ffff":
-                                return mp(x, 4);
-                            case "fff":
-                                return mp(x, 3);
-                            case "ff":
-                                return mp(x, 2);
-                            case "f":
-                                return mp(x, 1);
-                            case "o":
-                                return tzo(x);
-                            case "Z":
-                                return tz(x);
-                            default:
-                                return m;
-                        } // End Switch
-                    } // End Fn
-                    .bind(this)
-                    //.apply(this, arguments)
-                );
-            }
-
-        };
+};
 
 
 var HtmlTools =
@@ -690,19 +696,18 @@ var blob =
 				return obj;
 			}
             
-            
-        /*
-        for (i = 1; i < 13; ++i)
-        {
-            console.log(reg.monthNames[i - 1] + ": " + daysInMonth(i-1, 2015));
 
-            // console.log(getWeekDay(2015, i));
-            // console.log(getWeekDayOrdinal(2015, i));
-        }
-        */
+            /*
+            for (i = 1; i < 13; ++i)
+            {
+                console.log(reg.monthNames[i - 1] + ": " + daysInMonth(i-1, 2015));
 
+                // console.log(getWeekDay(2015, i));
+                // console.log(getWeekDayOrdinal(2015, i));
+            }
+            */
             
-            function cDatePicker()
+            function cDatePicker(lang)
             {
 				var ele = function (id) { return document.getElementById(id); };
 				var createElement = document.createElement.bind(document);
@@ -710,10 +715,34 @@ var blob =
 				var appendChild = function (el, child) { el.appendChild(child); };
 				
 				var withWK = true;
-                var reg = reg_de_CH;
-                //var reg = reg_fr_CH;
-                // var reg = reg_it_CH;
-                //var reg = reg_en_GB
+
+				if (!cDatePicker.prototype.language)
+				    cDatePicker.prototype.language = "DE"
+				
+				if (!lang)
+				    lang = cDatePicker.prototype.language;
+
+				var reg = null;
+
+				switch (lang.toLowerCase())
+				{
+				    case "de":
+				        reg = reg_de_CH;
+				        break;
+				    case "fr":
+				        reg = reg_fr_CH;
+				        break;
+				    case "it":
+				        reg = reg_it_CH;
+				        break;
+				    case "en":
+				        reg = reg_en_GB;
+				        break;
+				    default:
+				        console.log("defaulting...");
+				        reg = reg_de_CH;
+				}
+				
 
 				
 				var obj = {
@@ -970,7 +999,7 @@ var blob =
 								
 								if (td.getTime() === today.getTime())
 								{
-								    console.log("setting today")
+								    // console.log("setting today")
 								    divAbb.className += " today";
 								}
 
@@ -1009,7 +1038,7 @@ var blob =
 					// console.log(document.getElementById('selYear2').selectedText);
 					
 					var datePicker = new cDatePicker();
-					var datePicker2 = new cDatePicker();
+					var datePicker2 = new cDatePicker("FR");
 					// console.log( datePicker );
 					
 					// selectByText("selYear2", 2027);
@@ -1021,16 +1050,116 @@ var blob =
         </script>
         
         <div style="clear: both; height: 2cm;"></div>
+    
+
+    <style type="text/css">
+
+        .pickArea
+        {
+            display: block;
+            position: absolute;
+            #margin-top: 10px;
+            width: 200px;
+            height: 200px;
+            background-color: hotpink;
+
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            -o-transition: all 0.5s ease-in-out;
+            -ms-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+    </style>
+    
+    
       
 
+    <input id="txtMe" type="text" value="31.12.2999" />
 
 
 <script type="text/javascript">
 	
+    function getOffset(el)
+    {
+        var _x = 0;
+        var _y = 0;
+        var _b = el.offsetHeight;
+        var _r = el.offsetWidth;
+
+        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop))
+        {
+            _x += el.offsetLeft - el.scrollLeft;
+            _y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+        }
+
+        _b -= -_y
+        _r -= -_x
+
+        return { top: _y, left: _x, bottom: _b, right: _r };
+    }
+
+
+    function pick(el)
+    {
+        console.log(el);
+
+        if (el.divPickr)
+        {
+            el.divPickr.parentElement.removeChild(el.divPickr);
+            el.divPickr = null;
+        }
+
+        var off = getOffset(el);
+        var d = document.createElement("div");
+        d.className = "pickArea";
+        d.setAttribute('style', 'top: ' + off.bottom + 'px; left: ' + off.left + 'px;');
+        el.divPickr = d;
+        // <div id="divPi" class="lolz">Test</div>
+        document.body.appendChild(d);
+        window.setTimeout(function ()
+        {
+            d.style.opacity = 1;
+        }, 20);
+    }
+
+
+    function unpick(el)
+    {
+        window.setTimeout(function ()
+        {
+            if (el.divPickr && el.divPickr.style.opacity == 0)
+            {
+                el.divPickr.parentElement.removeChild(el.divPickr);
+                el.divPickr = null;
+            }
+            
+        }, 1000);
+
+        el.divPickr.style.opacity = 0;
+    }
+
+    
+    var ele = document.getElementById("txtMe");
+
+    HtmlTools.addEvent(ele, "focus", function ()
+    {
+        console.log("focus");
+        pick(this);
+    });
+
+    HtmlTools.addEvent(ele, "blur", function ()
+    {
+        console.log("blur");
+        unpick(this);
+    });
+
 </script>
 
 
-    <div id="static" class="datepicker" style="background-color: hotpink; float: left; border: 1px solid black; padding: 5px;">
+    <div id="static" class="datepicker" style="display: none; background-color: hotpink; float: left; border: 1px solid black; padding: 5px;">
         <div class="button">
             <div class="chYear noselect" onclick="console.log('idYear(this,-1)');" style="background-color: green; float: left;">«</div>
             <div class="chMonth noselect" onclick="console.log('this.parentElement.parentElement.pickr.idMonth(this,-1)');" style="background-color: yellow; float: left;">‹</div>

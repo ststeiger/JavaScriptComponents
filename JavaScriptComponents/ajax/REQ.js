@@ -66,8 +66,10 @@ var REQ =
 					{
 						ex = JSON.parse(r.responseText);
 					}
-					catch()
-					{}
+					catch(e)
+					{
+					    // logMyErrors(e);
+					}
                     
                     onError(r, ex);
                 }
@@ -97,10 +99,7 @@ var REQ =
 
 	, "sendRequest": function (url, onSuccess, onError, onDone, postData, contentType, method)
     {
-		if (url.indexOf('?') != -1)
-			url += "&no_cache=" + (new Date()).getTime();
-		else
-			url += "?no_cache=" + (new Date()).getTime();
+	    url += ((url.indexOf('?') === -1) ? "?" : "&") + "no_cache=" + (new Date()).getTime();
 
 		if (postData)
 		{
@@ -121,9 +120,7 @@ var REQ =
 				}
 
 				if (contentType.indexOf("application/x-www-form-urlencoded") != -1)
-				{
 				    postData = this.urlEncode(postData);
-				}
 			}
 
 		}
@@ -136,7 +133,7 @@ var REQ =
 
 		if (false)
 		{
-		    if (url.indexOf("popDrop") == -1)
+		    if (url.indexOf("popDrop") === -1)
 		    { 
 		        console.log("url: " + url);
 		        console.log("method: " + method);
