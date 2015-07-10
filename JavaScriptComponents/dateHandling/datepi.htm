@@ -446,7 +446,6 @@ var HtmlTools =
 ;
 
 
-			
 var blob =
     {
         
@@ -707,7 +706,7 @@ var blob =
             }
             */
             
-            function cDatePicker(lang)
+            function cDatePicker(txtId, lang)
             {
 				var ele = function (id) { return document.getElementById(id); };
 				var createElement = document.createElement.bind(document);
@@ -749,7 +748,70 @@ var blob =
 					 //pickr: document.getElementById("pickr")
 					 pickr: null
 					,hello: "world" 
-					
+					,inputField: ele(txtId)
+
+				    ,getOffset: function(el)
+				    {
+				        var _x = 0;
+				        var _y = 0;
+				        var _b = el.offsetHeight;
+				        var _r = el.offsetWidth;
+
+				        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop))
+				        {
+				            _x += el.offsetLeft - el.scrollLeft;
+				            _y += el.offsetTop - el.scrollTop;
+				            el = el.offsetParent;
+				        }
+
+				        _b -= -_y
+				        _r -= -_x
+
+				        return { top: _y, left: _x, bottom: _b, right: _r };
+				    }
+
+				    ,pick: function(el)
+				    {
+				        // console.log(el);
+
+				        if (el.divPickr)
+				        {
+				            el.divPickr.parentElement.removeChild(el.divPickr);
+				            el.divPickr = null;
+				        }
+
+				        var off = obj.getOffset(el);
+						var d = obj.create();
+						d.style.display = "block";
+
+				        d.className = "pickArea";
+				        d.setAttribute('style', 'top: ' + off.bottom + 'px; left: ' + off.left + 'px;');
+				        el.divPickr = d;
+				        // <div id="divPi" class="lolz">Test</div>
+				        document.body.appendChild(d);
+				        window.setTimeout(function ()
+				        {
+				            d.style.opacity = 1;
+				        }, 20);
+				    }
+
+
+				    ,unpick: function(el)
+				    {
+				        window.setTimeout(function ()
+				        {
+				            if (el.divPickr && el.divPickr.style.opacity == 0)
+				            {
+				                el.divPickr.parentElement.removeChild(el.divPickr);
+				                el.divPickr = null;
+				            }
+				            
+				        }, 1000);
+
+				        el.divPickr.style.opacity = 0;
+				    }
+
+
 					// http://stackoverflow.com/questions/805107/creating-multiline-strings-in-javascripts
 					,datePickerTemplate: (function ()
 {/*
@@ -828,7 +890,9 @@ var blob =
 					    // console.log(ti.getFullYear());
 
 					    console.log( stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy") );
-					    
+
+					    obj.inputField.value= stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy");
+					    // inputField: ele(txtId)
 
 						//if (targ.tagName === 'A' && targ.className != null && targ.className.indexOf('hdV') === -1)
 						//{
@@ -851,27 +915,21 @@ var blob =
 
 						dp.insertAdjacentHTML("afterbegin", obj.getTemplateString(obj.datePickerTemplate));
 
-						
-
 					    var selMonth = dp.getElementsByClassName("dpMonth")[0];
 						var selYear = dp.getElementsByClassName("dpYear")[0];
 
 
 						var btnYearLeft = dp.getElementsByClassName("chYear")[0];
-						var btnYearRight = dp.getElementsByClassName("chYear")[0];
+						var btnYearRight = dp.getElementsByClassName("chYear")[1];
 
 						var btnMonthLeft = dp.getElementsByClassName("chMonth")[0];
-						var btnMonthRight = dp.getElementsByClassName("chMonth")[0];
+						var btnMonthRight = dp.getElementsByClassName("chMonth")[1];
 
-					    // console.log(btnYearLeft);
-					    // console.log(btnYearRight);
+						btnYearLeft.setAttribute("title", "Decrement Year");
+						btnMonthLeft.setAttribute("title", "Decrement Month");
 
-						btnYearLeft.setAttribute("title", "hello world");
-						btnMonthLeft.setAttribute("title", "hello world 2");
-
-						// <div class="chYear noselect" onclick="this.parentElement.parentElement.pickr.idYear(this,-1);" style="background-color: green; float: left;">&#171;</div>
-	                    // <div class="chMonth noselect" onclick="this.parentElement.parentElement.pickr.idMonth(this,-1);" style="background-color: yellow; float: left;">&#8249;</div><!--
-
+						btnYearRight.setAttribute("title", "Increment Year");
+						btnMonthRight.setAttribute("title", "Increment Month");
 
 						var data = [];
 
@@ -898,6 +956,7 @@ var blob =
 						// <div id="pickr" class="datepicker" style="background-color: white; float: left; border: 1px solid black; padding: 5px;" onmouseout="console.log('destroy');">
 						var divPicker = createElement('div');
 						divPicker.className = 'datepicker';
+						divPicker.style.display = "none";
 						divPicker.setAttribute("style", "background-color: white; float: left; border: 1px solid black; padding: 5px;");
 						appendChild(document.body, divPicker);
 						
@@ -906,6 +965,8 @@ var blob =
 						
 						obj.populateChoices();
 						obj.redrawDatePicker();
+
+						return divPicker;
 					}
 					
 					,redrawDatePicker: function()
@@ -1043,8 +1104,25 @@ var blob =
 				
 				// console.log(obj.datePickerTemplate);
 				// console.log(obj.getTemplateString(obj.datePickerTemplate));
-				
-				obj.create();
+
+				console.log(ele(txtId));
+			    var ele = document.getElementById(txtId);
+			    ele.setAttribute("readonly", "readonly");
+
+			    HtmlTools.addEvent(ele, "focus", function ()
+			    {
+			        console.log("focus");
+			        obj.pick(this);
+			    });
+
+			    /*
+			    HtmlTools.addEvent(ele, "blur", function ()
+			    {
+			        console.log("blur");
+			        obj.unpick(this);
+			    });
+			    */
+
 				return obj;
 			}
             
@@ -1056,10 +1134,12 @@ var blob =
 					// console.log(document.getElementById('selYear2').selectedIndex);
 					// console.log(document.getElementById('selYear2').selectedText);
 					
-					var datePicker = new cDatePicker();
-					var datePicker2 = new cDatePicker("FR");
+					var datePicker = new cDatePicker("txtMe");
+					var datePicker = new cDatePicker("txtMoi", "FR");
+
+					// var datePicker2 = new cDatePicker("FR");
 					// console.log( datePicker );
-					
+
 					// selectByText("selYear2", 2027);
 					// console.log(document.querySelector("#selYear2 option[text()='2027']"));
 					console.log("Finished DomReady");
@@ -1078,9 +1158,9 @@ var blob =
             display: block;
             position: absolute;
             #margin-top: 10px;
-            width: 200px;
-            height: 200px;
-            background-color: hotpink;
+            #width: 200px;
+            #height: 200px;
+            #background-color: hotpink;
 
             -webkit-transition: all 0.5s ease-in-out;
             -moz-transition: all 0.5s ease-in-out;
@@ -1092,89 +1172,13 @@ var blob =
 
     </style>
     
-    
-      
 
-    <input id="txtMe" type="text" value="31.12.2999" />
-
+    <input id="txtMe" type="text" value="31.12.2999"  />
+    <input type="button" onclick="document.getElementById('txtMe').value = 'omg';" value="click" />
+     <input id="txtMoi" type="text" value="31.12.2999" />
 
 <script type="text/javascript">
 	
-    function getOffset(el)
-    {
-        var _x = 0;
-        var _y = 0;
-        var _b = el.offsetHeight;
-        var _r = el.offsetWidth;
-
-        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop))
-        {
-            _x += el.offsetLeft - el.scrollLeft;
-            _y += el.offsetTop - el.scrollTop;
-            el = el.offsetParent;
-        }
-
-        _b -= -_y
-        _r -= -_x
-
-        return { top: _y, left: _x, bottom: _b, right: _r };
-    }
-
-
-    function pick(el)
-    {
-        console.log(el);
-
-        if (el.divPickr)
-        {
-            el.divPickr.parentElement.removeChild(el.divPickr);
-            el.divPickr = null;
-        }
-
-        var off = getOffset(el);
-        var d = document.createElement("div");
-        d.className = "pickArea";
-        d.setAttribute('style', 'top: ' + off.bottom + 'px; left: ' + off.left + 'px;');
-        el.divPickr = d;
-        // <div id="divPi" class="lolz">Test</div>
-        document.body.appendChild(d);
-        window.setTimeout(function ()
-        {
-            d.style.opacity = 1;
-        }, 20);
-    }
-
-
-    function unpick(el)
-    {
-        window.setTimeout(function ()
-        {
-            if (el.divPickr && el.divPickr.style.opacity == 0)
-            {
-                el.divPickr.parentElement.removeChild(el.divPickr);
-                el.divPickr = null;
-            }
-            
-        }, 1000);
-
-        el.divPickr.style.opacity = 0;
-    }
-
-    
-    var ele = document.getElementById("txtMe");
-
-    HtmlTools.addEvent(ele, "focus", function ()
-    {
-        console.log("focus");
-        pick(this);
-    });
-
-    HtmlTools.addEvent(ele, "blur", function ()
-    {
-        console.log("blur");
-        unpick(this);
-    });
-
 </script>
 
 
