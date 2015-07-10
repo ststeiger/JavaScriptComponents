@@ -757,8 +757,8 @@ var blob =
 	<div class="chYear noselect" onclick="this.parentElement.parentElement.pickr.idYear(this,-1);" style="background-color: green; float: left;">&#171;</div>
 	<div class="chMonth noselect" onclick="this.parentElement.parentElement.pickr.idMonth(this,-1);" style="background-color: yellow; float: left;">&#8249;</div><!--
 	--><div class="divSels">
-		<select id="selMonth2" class="dpMonth noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();"><option>Januar</option></select>
-		<select id="selYear2" class="dpYear noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();">
+		<select class="dpMonth noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();"><option>Januar</option></select>
+		<select class="dpYear noselect" onchange="this.parentElement.parentElement.parentElement.pickr.redrawDatePicker();">
 			<option>-&infin;</option>
 			<option>1999</option>
 			<option>2000</option>
@@ -851,8 +851,27 @@ var blob =
 
 						dp.insertAdjacentHTML("afterbegin", obj.getTemplateString(obj.datePickerTemplate));
 
-						var selMonth = dp.getElementsByClassName("dpMonth")[0];
+						
+
+					    var selMonth = dp.getElementsByClassName("dpMonth")[0];
 						var selYear = dp.getElementsByClassName("dpYear")[0];
+
+
+						var btnYearLeft = dp.getElementsByClassName("chYear")[0];
+						var btnYearRight = dp.getElementsByClassName("chYear")[0];
+
+						var btnMonthLeft = dp.getElementsByClassName("chMonth")[0];
+						var btnMonthRight = dp.getElementsByClassName("chMonth")[0];
+
+					    // console.log(btnYearLeft);
+					    // console.log(btnYearRight);
+
+						btnYearLeft.setAttribute("title", "hello world");
+						btnMonthLeft.setAttribute("title", "hello world 2");
+
+						// <div class="chYear noselect" onclick="this.parentElement.parentElement.pickr.idYear(this,-1);" style="background-color: green; float: left;">&#171;</div>
+	                    // <div class="chMonth noselect" onclick="this.parentElement.parentElement.pickr.idMonth(this,-1);" style="background-color: yellow; float: left;">&#8249;</div><!--
+
 
 						var data = [];
 
