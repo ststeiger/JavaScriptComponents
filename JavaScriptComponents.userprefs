@@ -1,4 +1,4 @@
-﻿<Properties StartupItem="JavaScriptComponents/JavaScriptComponents.csproj">
+﻿<Properties StartupItem="JavaScriptComponents/JavaScriptComponents.csproj" GitUserInfo="UsingGIT">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="firefox" />
   <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
