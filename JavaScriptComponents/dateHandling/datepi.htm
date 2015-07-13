@@ -772,6 +772,7 @@ var blob =
 
 				    ,pick: function(el)
 				    {
+				        // console.log("el");
 				        // console.log(el);
 
 				        if (el.divPickr)
@@ -787,6 +788,12 @@ var blob =
 				        d.className = "pickArea";
 				        d.setAttribute('style', 'top: ' + off.bottom + 'px; left: ' + off.left + 'px;');
 				        el.divPickr = d;
+
+				        d.onmouseleave = function(event)
+				        {
+				            obj.unpick(obj.inputField);
+				        };
+
 				        // <div id="divPi" class="lolz">Test</div>
 				        document.body.appendChild(d);
 				        window.setTimeout(function ()
@@ -798,6 +805,7 @@ var blob =
 
 				    ,unpick: function(el)
 				    {
+				        // console.log("unpick");
 				        window.setTimeout(function ()
 				        {
 				            if (el.divPickr && el.divPickr.style.opacity == 0)
@@ -808,7 +816,10 @@ var blob =
 				            
 				        }, 1000);
 
-				        el.divPickr.style.opacity = 0;
+				        obj.inputField.blur();
+
+				        if (el.divPickr)
+				            el.divPickr.style.opacity = 0;
 				    }
 
 
@@ -884,14 +895,16 @@ var blob =
 
 					    var ti = el.getAttribute("data-ticks");
 					    ti = new Date(ti * 1);
-					    console.log(ti);
+					    // console.log(ti);
 					    // console.log(ti.getDate());
 					    // console.log(ti.getMonth());
 					    // console.log(ti.getFullYear());
 
 					    console.log( stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy") );
 
-					    obj.inputField.value= stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy");
+					    obj.inputField.value = stringFormater.formatDate(ti, "dddd, dd. MMMM yyyy");
+					    obj.unpick(obj.inputField);
+					    
 					    // inputField: ele(txtId)
 
 						//if (targ.tagName === 'A' && targ.className != null && targ.className.indexOf('hdV') === -1)
@@ -1105,13 +1118,13 @@ var blob =
 				// console.log(obj.datePickerTemplate);
 				// console.log(obj.getTemplateString(obj.datePickerTemplate));
 
-				console.log(ele(txtId));
+				// console.log(ele(txtId));
 			    var ele = document.getElementById(txtId);
 			    ele.setAttribute("readonly", "readonly");
 
 			    HtmlTools.addEvent(ele, "focus", function ()
 			    {
-			        console.log("focus");
+			        // console.log("focus");
 			        obj.pick(this);
 			    });
 
