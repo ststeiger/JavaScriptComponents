@@ -91,6 +91,7 @@
     <Content Include="ajax\REQ.js" />
     <Content Include="gantt\colorTools.js" />
     <Content Include="dateHandling\datepi.htm" />
+    <Content Include="cards.htm" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
