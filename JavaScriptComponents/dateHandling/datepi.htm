@@ -789,9 +789,47 @@ var blob =
 				        d.setAttribute('style', 'top: ' + off.bottom + 'px; left: ' + off.left + 'px;');
 				        el.divPickr = d;
 
-				        d.onmouseleave = function(event)
+				        /*
+				        d.onmouseout = function(ev)
 				        {
-				            obj.unpick(obj.inputField);
+					        console.log("mout");
+
+					        // console.log(ev.relatedTarget);
+				        	if(ev.relatedTarget && ev.relatedTarget.tagName === "HTML")
+				        	{
+				        		if(ev.target.tagName === "SELECT" || ev.target.tagName === "OPTION")
+				        		{
+				        			return;
+				        		}
+
+				        		obj.unpick(obj.inputField);
+				        	}
+				        		
+				        };
+				        */
+
+
+				        d.onmouseenter = function(ev)
+				        {
+				        	console.log("entering");
+				        };
+
+				        d.onmouseleave = function(ev)
+				        {
+				        	// console.log("ev");
+				        	// Fix FireFox select ==> mouseleave
+				        	if(ev.relatedTarget === null) return;
+
+
+				        	console.log("mouseleave");
+				        	//console.log(ev.target);
+				        	console.log(ev.currentTarget);
+				        	// sconsole.log(ev.relatedTarget);
+
+				        	// obj.unpick(obj.inputField);
+				        	// console.log(this);
+				        	// console.log(ev.target);
+				            
 				        };
 
 				        // <div id="divPi" class="lolz">Test</div>
