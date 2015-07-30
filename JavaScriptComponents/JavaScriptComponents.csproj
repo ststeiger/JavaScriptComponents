@@ -40,7 +40,12 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Web.Services" />
@@ -73,7 +78,9 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ajax\Data.ashx" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="colorFlow\colflow.js" />
     <Content Include="colorFlow\colorflow.min.js" />
@@ -92,6 +99,13 @@
     <Content Include="gantt\colorTools.js" />
     <Content Include="dateHandling\datepi.htm" />
     <Content Include="cards.htm" />
+    <Content Include="Libs\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ajax\Data.ashx.cs">
+      <DependentUpon>Data.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="ajax\Serialize.cs" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
