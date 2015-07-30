@@ -2,7 +2,7 @@
 <head>
     <title></title>
     <meta charset="utf-8">
-    <style>
+    <style type="text/css">
         .country
         {
             fill: #222;
@@ -19,6 +19,7 @@
         {
             fill: none;
             stroke: #fff;
+            #stroke: #f0F;
             stroke-width: .3;
         }
     </style>
@@ -42,10 +43,12 @@
         d3.json("ch.json",
             function (error, ch)
             {
-                svg.append("path")
-                .datum(topojson.feature(ch, ch.objects.country))
-                .attr("class", "country")
-                .attr("d", path)
+                svg
+                    .attr("id", "svgSwissMunicipalitites")
+                    .append("path")
+                    .datum(topojson.feature(ch, ch.objects.country))
+                    .attr("class", "country")
+                    .attr("d", path)
                 ;
 
                 svg.append("path")
@@ -57,6 +60,18 @@
                 svg.selectAll(".municipalities")
                     .data(topojson.feature(ch, ch.objects.municipalities).features)
                     .enter().append("path")
+
+                    .attr("id", function (d)
+                        {
+                            return d.id;
+                        }
+                    )
+                    .attr("title", function (d)
+                        {
+                            return d.properties.name;
+                        }
+                    )
+
                     .attr("class", function (d) { 
                         // console.log(d.properties.name); console.log(d.properties.name);
                         swissData.push(
@@ -74,6 +89,7 @@
 
                 console.log(swissData);
 
+                /*
                 var url = "../ajax/Data.ashx";
                 d3.xhr(url)
                     .header("Content-Type", "application/json")
@@ -86,17 +102,63 @@
                             console.log("got response", data);
                         }
                     );
+                    */
 
-
-                /*
+                
                 svg.append("path")
-                .datum(topojson.mesh(ch, ch.objects.cantons, function(a, b) { return a !== b; }))
-                .attr("class", "canton-boundaries")
-                .attr("d", path)
+                    .datum(topojson.mesh(ch, ch.objects.cantons, function(a, b) { return a !== b; }))
+                    .attr("class", "canton-boundaries")
+                    .attr("d", path)
                 ;
-                */
+               
             }
         );
+
+
+        function serialize()
+        {
+            /*
+            // S: object
+            // var markup = (new XMLSerializer()).serializeToString(S.contentDocument.rootElement);
+            var markup = (new XMLSerializer()).serializeToString(document.getElementById("svgSwissMunicipalitites"));
+            console.log(markup)
+            var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(markup)));
+            var DOM_img = document.createElement("img");
+            DOM_img.src = imgsrc;
+            document.body.appendChild(DOM_img);
+            */
+
+            /*
+            var markup = (new XMLSerializer()).serializeToString(document.getElementById("svgSwissMunicipalitites"));
+            var a = document.createElement("a");
+            a.href = "data:application/octet-stream;charset=utf-16le;base64," + btoa(unescape(encodeURIComponent(markup)));
+            a.innerHTML = "Download - UTF16";
+            document.body.appendChild(a);
+            console.log(a);
+            */
+
+            var markup = (new XMLSerializer()).serializeToString(document.getElementById("svgSwissMunicipalitites"));
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(markup));
+            element.setAttribute('download', "filename");
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            /*
+            var markup = (new XMLSerializer()).serializeToString(document.getElementById("svgSwissMunicipalitites"));
+            console.log(markup);
+            var a = document.createElement("a");
+            a.href= "data:application/octet-stream;charset=utf-8;base64," + btoa(unescape(encodeURIComponent(markup)));
+            a.innerHTML = "Download - UTF8";
+            document.body.appendChild(a);
+            console.log(a);
+
+            */
+        }
+
 
     </script>
 </body>

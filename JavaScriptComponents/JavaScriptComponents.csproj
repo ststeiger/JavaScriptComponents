@@ -82,6 +82,7 @@
     <Content Include="ajax\Data.ashx" />
     <Content Include="switzerland\d3.v3.min.js" />
     <Content Include="switzerland\index.html" />
+    <Content Include="switzerland\swiss.svg" />
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
     <Content Include="uk\index.html" />
