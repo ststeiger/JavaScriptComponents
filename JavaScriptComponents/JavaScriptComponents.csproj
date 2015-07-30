@@ -80,6 +80,11 @@
   </ProjectExtensions>
   <ItemGroup>
     <Content Include="ajax\Data.ashx" />
+    <Content Include="switzerland\d3.v3.min.js" />
+    <Content Include="switzerland\index.html" />
+    <Content Include="switzerland\thumbnail.png" />
+    <Content Include="switzerland\topojson.v1.min.js" />
+    <Content Include="uk\index.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="colorFlow\colflow.js" />
@@ -106,6 +111,24 @@
       <DependentUpon>Data.ashx</DependentUpon>
     </Compile>
     <Compile Include="ajax\Serialize.cs" />
+    <Compile Include="ajax\SQL.cs" />
+    <Content Include="uk\url.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="switzerland\ch.json" />
+    <Content Include="switzerland\README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+    <Content Include="switzerland\ch.pretty.json" />
+    <Content Include="uk\uk.json" />
+    <Content Include="uk\uk.pretty.json" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
