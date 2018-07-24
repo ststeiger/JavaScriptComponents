@@ -82,6 +82,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Content Include="ajax\Data.ashx" />
+    <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
     <Content Include="switzerland\d3.v3.min.js" />
     <Content Include="switzerland\index.html" />
