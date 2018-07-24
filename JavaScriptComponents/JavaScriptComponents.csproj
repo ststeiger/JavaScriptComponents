@@ -20,6 +20,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,6 +82,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <Content Include="ajax\Data.ashx" />
+    <Content Include="dateHandling\info.txt" />
     <Content Include="switzerland\d3.v3.min.js" />
     <Content Include="switzerland\index.html" />
     <Content Include="switzerland\swiss.svg" />
@@ -120,6 +123,9 @@
     <Content Include="switzerland\README.md" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="virtualRendering\hyperlist.htm" />
+    <Content Include="virtualRendering\hyperlist.js" />
+    <Content Include="virtualRendering\virtrend.htm" />
     <Content Include="web.config" />
     <Content Include="switzerland\ch.pretty.json" />
     <Content Include="uk\uk.json" />

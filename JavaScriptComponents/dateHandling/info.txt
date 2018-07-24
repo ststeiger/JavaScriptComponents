@@ -1,0 +1,6 @@
+
+https://github.com/dbushell/Pikaday/blob/master/pikaday.js
+https://flatpickr.js.org/examples/#datetimepicker-with-limited-time-range
+https://cdnjs.com/libraries/flatpickr
+
+
