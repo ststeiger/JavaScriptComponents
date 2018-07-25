@@ -84,6 +84,10 @@
     <Content Include="ajax\Data.ashx" />
     <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
+    <Content Include="index.htm" />
+    <Content Include="multi_checkbox\multi_checkbox.htm" />
+    <Content Include="multi_checkbox\multi_checkbox_no.htm" />
+    <Content Include="multi_checkbox\multi_checkbox_select.htm" />
     <Content Include="switzerland\d3.v3.min.js" />
     <Content Include="switzerland\index.html" />
     <Content Include="switzerland\swiss.svg" />
