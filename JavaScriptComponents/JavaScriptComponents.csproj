@@ -103,6 +103,7 @@
     <Content Include="virtualRendering\react_depends\react-dom.min.js" />
     <Content Include="virtualRendering\react_depends\react.min.js" />
     <Content Include="virtualRendering\react_depends\snippet-javascript-console.min.js" />
+    <Content Include="virtualRendering\vlist.htm" />
     <Content Include="wysiwyg\editor_4.htm" />
   </ItemGroup>
   <ItemGroup>
@@ -139,7 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="virtualRendering\hyperlist.htm" />
-    <Content Include="virtualRendering\hyperlist.js" />
     <Content Include="virtualRendering\virtrend.htm" />
     <Content Include="web.config" />
     <Content Include="switzerland\ch.pretty.json" />

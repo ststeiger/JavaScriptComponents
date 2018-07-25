@@ -25,20 +25,30 @@
 'use strict';
 
 
-
-
-interface IConfig 
+interface IConfigBase
 {
-    w: number; // 300
-    h: number; // 300
-    itemHeight: number; // 31
-    totalRows: number; // 10000
-    items?: any[];
-    generatorFn: (row: any) => Element;
+    w: number; // 300 - List width 
+    h: number; // 300 - List height 
+    itemHeight: number; // 31 - item height in pixel 
+}
+
+interface IConfig extends IConfigBase 
+{
+    items?: string[] | Node[]; // list of listitems (nodes/strings) 
+}
+
+interface IConfigDebug extends IConfigBase 
+{
+    totalRows?: number; // 10000 - doesn't need to be specified if items is supplied 
+
+    // if generatorFn != null ==> items computed from generatorFn 
+    // then totalRows must be specified
+    generatorFn: (rowNumber: number) => Element;
 }
 
 
-let aaa: IConfig =
+/*
+let example: IConfigDebug =
     {
         w: 300,
         h: 300,
@@ -53,17 +63,18 @@ let aaa: IConfig =
             return el;
         }
     };
-
+*/
 
 
 // https://github.com/sergi/virtual-list
-export class VirtualList
+// export
+class VirtualList
 {
 
     protected itemHeight;
     protected items;
     protected generatorFn;
-    protected container;
+    protected container:HTMLElement;
     protected totalRows;
     protected cachedItemsLen;
 
@@ -71,76 +82,91 @@ export class VirtualList
 
 
 
+    
+    protected m_lastScrolled;
+    protected m_lastRepaintY;
+    protected m_maxBuffer;
+    protected m_screenItemsLen;
+
     /**
      * Creates a virtually-rendered scrollable list.
      * @param {object} config
      * @constructor
      */
-    constructor(config: IConfig)
+    constructor(config: IConfig | IConfigDebug) 
     {
+        this.createRow = this.createRow.bind(this);
+        this.renderChunk = this.renderChunk.bind(this)
+        this.removeUnusedNodes = this.removeUnusedNodes.bind(this)
+        this.onScroll = this.onScroll.bind(this);
+
+
         let width = (config && config.w + 'px') || '100%';
         let height = (config && config.h + 'px') || '100%';
         let itemHeight = this.itemHeight = config.itemHeight;
 
-        this.items = config.items;
-        this.generatorFn = config.generatorFn;
-        this.totalRows = config.totalRows || (config.items && config.items.length);
+        this.items = (<IConfig>config).items;
+        this.generatorFn = (<IConfigDebug>config).generatorFn;
+        this.totalRows = (<IConfigDebug>config).totalRows || ((<IConfig>config).items && (<IConfig>config).items.length);
+
+        this.m_lastScrolled = 0;
+        this.m_screenItemsLen = Math.ceil(config.h / itemHeight);
+        this.m_maxBuffer = this.m_screenItemsLen * this.itemHeight;
+
 
         let scroller = VirtualList.createScroller(itemHeight * this.totalRows);
         this.container = VirtualList.createContainer(width, height);
         this.container.appendChild(scroller);
 
-        let screenItemsLen = Math.ceil(config.h / itemHeight);
         // Cache 4 times the number of items that fit in the container viewport
-        this.cachedItemsLen = screenItemsLen * 3;
-        this._renderChunk(this.container, 0);
+        // this.cachedItemsLen = screenItemsLen * 3;
+        this.cachedItemsLen = this.m_screenItemsLen * 3;
+        this.renderChunk(this.container, 0);
 
-        let self = this;
-        let lastRepaintY;
-        let maxBuffer = screenItemsLen * itemHeight;
-        let lastScrolled = 0;
 
         // As soon as scrolling has stopped, this interval asynchronouslyremoves all
         // the nodes that are not used anymore
-        this.rmNodeInterval = setInterval(
-            function ()
-            {
-                if (Date.now() - lastScrolled > 100)
-                {
-                    let badNodes = document.querySelectorAll('[data-rm="1"]');
-                    for (let i = 0, l = badNodes.length; i < l; i++)
-                    {
-                        self.container.removeChild(badNodes[i]);
-                    }
-                }
-            }, 300
-        );
+        this.rmNodeInterval = setInterval(this.removeUnusedNodes, 300);
 
 
-        function onScroll(e)
-        {
-            let scrollTop = e.target.scrollTop; // Triggers reflow
-            if (!lastRepaintY || Math.abs(scrollTop - lastRepaintY) > maxBuffer)
-            {
-                let first: number = parseInt(<string><any>(scrollTop / itemHeight)) - screenItemsLen;
-                self._renderChunk(self.container, first < 0 ? 0 : first);
-                lastRepaintY = scrollTop;
-            }
-
-            lastScrolled = Date.now();
-            e.preventDefault && e.preventDefault();
-        }
-
-        this.container.addEventListener('scroll', onScroll);
-    }
+        this.container.addEventListener('scroll', this.onScroll);
+    } // End Constructor 
 
 
-    public createRow(i) 
+    public static createContainer(w, h)
+    {
+        let c: HTMLElement = document.createElement('div');
+        c.style.width = w;
+        c.style.height = h;
+        c.style.overflow = 'auto';
+        c.style.position = 'relative';
+        c.style.padding = "0";
+        c.style.border = '1px solid black';
+
+        return c;
+    } // End Function createContainer 
+
+
+    public static createScroller(h)
+    {
+        let scroller: HTMLElement = document.createElement('div');
+        scroller.style.opacity = "0";
+        scroller.style.position = 'absolute';
+        scroller.style.top = "0";
+        scroller.style.left = "0";
+        scroller.style.width = '1px';
+        scroller.style.height = h + 'px';
+        return scroller;
+    } // End Function createScroller 
+
+
+    public createRow(i:number) 
     {
         let item;
 
         if (this.generatorFn)
             item = this.generatorFn(i);
+
         else if (this.items)
         {
             if (typeof this.items[i] === 'string')
@@ -160,7 +186,37 @@ export class VirtualList
         item.style.position = 'absolute';
         item.style.top = (i * this.itemHeight) + 'px';
         return item;
-    }
+    } // End Function createRow 
+
+
+    protected onScroll(e)
+    {
+        let scrollTop = e.target.scrollTop; // Triggers reflow
+        if (!this.m_lastRepaintY || Math.abs(scrollTop - this.m_lastRepaintY) > this.m_maxBuffer)
+        {
+            let first: number = parseInt(<string><any>(scrollTop / this.itemHeight)) - this.m_screenItemsLen;
+            this.renderChunk(this.container, first < 0 ? 0 : first);
+            this.m_lastRepaintY = scrollTop;
+        }
+
+        this.m_lastScrolled = Date.now();
+        e.preventDefault && e.preventDefault();
+    } // End Sub onScroll 
+
+
+    protected removeUnusedNodes()
+    {
+        if (Date.now() - this.m_lastScrolled > 100)
+        {
+            let badNodes = this.container.querySelectorAll('[data-rm="1"]');
+            for (let i = 0, l = badNodes.length; i < l; i++)
+            {
+                // https://stackoverflow.com/questions/12528049/if-a-dom-element-is-removed-are-its-listeners-also-removed-from-memory
+                this.container.removeChild(badNodes[i]);
+            } // Next i 
+        }
+
+    } // End Sub removeUnusedNodes 
 
 
     /**
@@ -173,7 +229,7 @@ export class VirtualList
      * @param {Number} from Starting position, i.e. first children index.
      * @return {void}
      */
-    private _renderChunk(node, from)
+    protected renderChunk(node, from)
     {
         let finalItem = from + this.cachedItemsLen;
         if (finalItem > this.totalRows)
@@ -185,46 +241,20 @@ export class VirtualList
         for (let i = from; i < finalItem; i++)
         {
             fragment.appendChild(this.createRow(i));
-        }
+        } // Next i 
 
         // Hide and mark obsolete nodes for deletion.
         for (let j = 1, l = node.childNodes.length; j < l; j++)
         {
             node.childNodes[j].style.display = 'none';
             node.childNodes[j].setAttribute('data-rm', '1');
-        }
+        } // next j 
 
         node.appendChild(fragment);
-    }
+    } // End Function renderChunk 
 
 
-    public static createContainer(w, h)
-    {
-        let c: HTMLElement = document.createElement('div');
-        c.style.width = w;
-        c.style.height = h;
-        c.style.overflow = 'auto';
-        c.style.position = 'relative';
-        c.style.padding = "0";
-        c.style.border = '1px solid black';
-        return c;
-    }
-
-
-    public static createScroller(h)
-    {
-        let scroller: HTMLElement = document.createElement('div');
-        scroller.style.opacity = "0";
-        scroller.style.position = 'absolute';
-        scroller.style.top = "0";
-        scroller.style.left = "0";
-        scroller.style.width = '1px';
-        scroller.style.height = h + 'px';
-        return scroller;
-    }
-
-
-}
+} // End Class VirtualList 
 
 
 // https://www.davidbcalhoun.com/2014/what-is-amd-commonjs-and-umd/
