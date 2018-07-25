@@ -99,6 +99,10 @@
     <Content Include="ts\hyperlist.js" />
     <Content Include="ts\vlist.js" />
     <Content Include="uk\index.html" />
+    <Content Include="virtualRendering\react_depends\babel.min.js" />
+    <Content Include="virtualRendering\react_depends\react-dom.min.js" />
+    <Content Include="virtualRendering\react_depends\react.min.js" />
+    <Content Include="virtualRendering\react_depends\snippet-javascript-console.min.js" />
     <Content Include="wysiwyg\editor_4.htm" />
   </ItemGroup>
   <ItemGroup>
@@ -156,7 +160,6 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
 </Project>

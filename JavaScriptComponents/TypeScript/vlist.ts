@@ -46,10 +46,10 @@ let aaa: IConfig =
         totalRows: 10000,
         generatorFn: function (row)
         {
-            var el = document.createElement("div");
+            let el = document.createElement("div");
             el.innerHTML = "ITEM " + row;
             el.style.borderBottom = "1px solid red";
-            el.style.position = "absolute"
+            el.style.position = "absolute";
             return el;
         }
     };
