@@ -94,6 +94,7 @@
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
     <Content Include="uk\index.html" />
+    <Content Include="wysiwyg\editor_4.htm" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="colorFlow\colflow.js" />
