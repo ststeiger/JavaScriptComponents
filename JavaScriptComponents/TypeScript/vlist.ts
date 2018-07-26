@@ -99,8 +99,8 @@ class VirtualList
         this.renderChunk = this.renderChunk.bind(this)
         this.removeUnusedNodes = this.removeUnusedNodes.bind(this)
         this.onScroll = this.onScroll.bind(this);
-
-
+        
+        
         let width = (config && config.w + 'px') || '100%';
         let height = (config && config.h + 'px') || '100%';
         let itemHeight = this.itemHeight = config.itemHeight;
@@ -127,8 +127,7 @@ class VirtualList
         // As soon as scrolling has stopped, this interval asynchronouslyremoves all
         // the nodes that are not used anymore
         this.rmNodeInterval = setInterval(this.removeUnusedNodes, 300);
-
-
+        
         this.container.addEventListener('scroll', this.onScroll);
     } // End Constructor 
 
@@ -231,6 +230,7 @@ class VirtualList
      */
     protected renderChunk(node, from)
     {
+        debugger;
         let finalItem = from + this.cachedItemsLen;
         if (finalItem > this.totalRows)
             finalItem = this.totalRows;

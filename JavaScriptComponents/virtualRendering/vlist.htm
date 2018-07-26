@@ -40,75 +40,84 @@
 
 </head>
 <body>
-    <style type="text/css">
-    </style>
-
     <div id="app"></div>
-
-  
+    
     <script src="../ts/vlist.js"></script>
   
     
     <script type="text/javascript">
-        // This will create a scrolling list of 300x300 with 10000 rows. It is necessary to specify
-        // how tall each row is by setting the `itemHeight` prpoerty in the config object. In this
-        // example, we set up a generator function that will generate each row on demand.
-        var list1 = new VirtualList({
-            w: 300,
-            h: 300,
-            itemHeight: 31,
-            totalRows: 10000,
-            generatorFn: function (row)
+        /*
+        if (false)
+        {
+
+            // This will create a scrolling list of 300x300 with 10000 rows. It is necessary to specify
+            // how tall each row is by setting the `itemHeight` prpoerty in the config object. In this
+            // example, we set up a generator function that will generate each row on demand.
+            var list1 = new VirtualList({
+                w: 300,
+                h: 300,
+                itemHeight: 31,
+                totalRows: 10000,
+                generatorFn: function (row)
+                {
+                    var el = document.createElement("div");
+                    el.innerHTML = "Generated ITEM " + row;
+                    el.style.borderBottom = "1px solid red";
+                    el.style.position = "absolute";
+                    return el;
+                }
+            });
+            document.body.appendChild(list1.container);
+        }
+        */
+        
+        
+        if (true)
+        {
+
+            // The code below will create an array of 10000 DOM elements beforehand and pass them to
+            // the list. The Virtual list will then display them on demand. Of course, even if the
+            // virtual list is smart about displaying them, this method fills up a lot of memory by
+            // creating the elements before-hand.
+            var bigAssList1 = [];
+            for (var i = 0; i < 10000; i++)
             {
                 var el = document.createElement("div");
-                el.innerHTML = "Generated ITEM " + row;
+                //el.classList.add("item");
+                el.innerHTML = "ITEM " + i;
                 el.style.borderBottom = "1px solid red";
-                el.style.position = "absolute"
-                return el;
+                // el.style.position = "absolute"; // is already being set to absolute... 
+                bigAssList1.push(el);
             }
-        });
-        document.body.appendChild(list1.container)
 
-
-
-        // The code below will create an array of 10000 DOM elements beforehand and pass them to
-        // the list. The Virtual list will then display them on demand. Of course, even if the
-        // virtual list is smart about displaying them, this method fills up a lot of memory by
-        // creating the elements before-hand.
-        var bigAssList1 = [];
-        for (var i = 0; i < 10000; i++)
-        {
-            var el = document.createElement("div");
-            //el.classList.add("item");
-            el.innerHTML = "ITEM " + i;
-            el.style.borderBottom = "1px solid red";
-            el.style.position = "absolute";
-            bigAssList1.push(el);
+            var list2 = new VirtualList({
+                w: 300,
+                h: 300,
+                items: bigAssList1,
+                itemHeight: 31
+            });
+            document.body.appendChild(list2.container);
         }
+        
+        /*
+        if (false)
+        {
 
-        var list2 = new VirtualList({
-            w: 300,
-            h: 300,
-            items: bigAssList1,
-            itemHeight: 31
-        });
-        document.body.appendChild(list2.container)
+            // The code below will create an array of 10000 strings beforehand and pass them to
+            // the list. The Virtual list will then display them on demand.
+            var bigAssList2 = [];
+            for (var i = 0; i < 10000; i++)
+                bigAssList2.push("StringItem " + i);
 
-
-
-        // The code below will create an array of 10000 strings beforehand and pass them to
-        // the list. The Virtual list will then display them on demand.
-        var bigAssList2 = [];
-        for (var i = 0; i < 10000; i++)
-            bigAssList2.push("StringItem " + i);
-
-        var list3 = new VirtualList({
-            w: 300,
-            h: 300,
-            items: bigAssList2,
-            itemHeight: 31
-        });
-        document.body.appendChild(list3.container)
+            var list3 = new VirtualList({
+                w: 300,
+                h: 300,
+                items: bigAssList2,
+                itemHeight: 31
+            });
+            document.body.appendChild(list3.container);
+        }
+        */
     </script>
 
 </body>

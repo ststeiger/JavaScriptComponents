@@ -98,7 +98,9 @@
     <Content Include="switzerland\topojson.v1.min.js" />
     <Content Include="ts\hyperlist.js" />
     <Content Include="ts\vlist.js" />
+    <Content Include="TypeScript\jqvscroll.ts" />
     <Content Include="uk\index.html" />
+    <Content Include="virtualRendering\jqvscroll.htm" />
     <Content Include="virtualRendering\react_depends\babel.min.js" />
     <Content Include="virtualRendering\react_depends\react-dom.min.js" />
     <Content Include="virtualRendering\react_depends\react.min.js" />

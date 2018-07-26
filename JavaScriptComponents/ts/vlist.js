@@ -81,6 +81,7 @@ var VirtualList = (function () {
         }
     };
     VirtualList.prototype.renderChunk = function (node, from) {
+        debugger;
         var finalItem = from + this.cachedItemsLen;
         if (finalItem > this.totalRows)
             finalItem = this.totalRows;
