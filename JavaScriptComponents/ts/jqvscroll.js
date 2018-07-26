@@ -53,7 +53,6 @@ function onJump() {
 }
 function removeAllRows() {
     for (var i in rows) {
-        console.log("row.i", rows[i]);
         rows[i].remove();
         delete rows[i];
     }
@@ -81,6 +80,7 @@ function renderRow(row) {
     var text = document.createTextNode("row " + (row + 1));
     div.appendChild(text);
     content.appendChild(div);
+    return div;
 }
 function logDebugInfo() {
     var dbg = document.getElementById("debug");
@@ -95,9 +95,9 @@ function logDebugInfo() {
     };
     df.append("n = " + n)
         .append("ph = " + ph)
-        .append("cj = " + cj)
-        .append("<hr>")
-        .append("page = " + page)
+        .append("cj = " + cj);
+    df.appendChild(document.createElement("hr"));
+    df.append("page = " + page)
         .append("offset = " + offset)
         .append("virtual y = " + (prevScrollTop + offset))
         .append("real y = " + prevScrollTop)
