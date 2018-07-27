@@ -88,6 +88,9 @@
     <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
     <Content Include="index.htm" />
+    <Content Include="js\hyperlist.js" />
+    <Content Include="js\jqvscroll.js" />
+    <Content Include="js\vlist.js" />
     <Content Include="multi_checkbox\multi_checkbox.htm" />
     <Content Include="multi_checkbox\multi_checkbox_no.htm" />
     <Content Include="multi_checkbox\multi_checkbox_select.htm" />
@@ -96,9 +99,8 @@
     <Content Include="switzerland\swiss.svg" />
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
-    <Content Include="ts\hyperlist.js" />
-    <Content Include="ts\vlist.js" />
     <Content Include="TypeScript\jqvscroll.ts" />
+    <Content Include="TypeScript\mklink.txt" />
     <Content Include="uk\index.html" />
     <Content Include="virtualRendering\jqvscroll.htm" />
     <Content Include="virtualRendering\react_depends\babel.min.js" />
@@ -148,6 +150,14 @@
     <Content Include="uk\uk.json" />
     <Content Include="uk\uk.pretty.json" />
     <Content Include="TypeScript\tsconfig.json" />
+    <Content Include="TypeScript\es2015\tsconfig.json" />
+    <None Include="Dinetpub.pubxml" />
+    <Content Include="ts2015\hyperlist.js" />
+    <Content Include="ts2015\jqvscroll.js" />
+    <Content Include="ts2015\vlist.js" />
+    <Content Include="ts\hyperlist.js" />
+    <Content Include="ts\jqvscroll.js" />
+    <Content Include="ts\vlist.js" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -162,6 +172,7 @@
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
 </Project>
