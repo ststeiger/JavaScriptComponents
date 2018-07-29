@@ -87,7 +87,6 @@
     <Content Include="ajax\Data.ashx" />
     <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
-    <Content Include="details.txt" />
     <Content Include="index.htm" />
     <Content Include="js\hyperlist.js" />
     <Content Include="js\jqvscroll.js" />
