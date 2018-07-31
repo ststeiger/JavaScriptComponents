@@ -78,7 +78,7 @@ class VirtualList
     protected totalRows;
     protected cachedItemsLen;
 
-    protected rmNodeInterval;// setInterval
+    // protected rmNodeInterval;// setInterval
 
 
 
@@ -97,7 +97,7 @@ class VirtualList
     {
         this.createRow = this.createRow.bind(this);
         this.renderChunk = this.renderChunk.bind(this)
-        this.removeUnusedNodes = this.removeUnusedNodes.bind(this)
+        // this.removeUnusedNodes = this.removeUnusedNodes.bind(this)
         this.onScroll = this.onScroll.bind(this);
         
         
@@ -126,14 +126,41 @@ class VirtualList
 
         // As soon as scrolling has stopped, this interval asynchronouslyremoves all
         // the nodes that are not used anymore
-        this.rmNodeInterval = setInterval(this.removeUnusedNodes, 300);
+        // this.rmNodeInterval = setInterval(this.removeUnusedNodes, 300);
         
         this.container.addEventListener('scroll', this.onScroll);
     } // End Constructor 
 
 
+    public static Trace(...args: any[])
+    {
+        // console.log("c1", VirtualList.Trace.caller);
+        
+        let stackTrace = (new Error()).stack; // Only tested in latest FF and Chrome
+        if (stackTrace)
+        {
+            let callerName = stackTrace.replace(/^Error\s+/, ''); // Sanitize Chrome
+            callerName = callerName.split("\n")[1]; // 1st item is this, 2nd item is caller
+            callerName = callerName.replace(/^\s+at Object./, ''); // Sanitize Chrome
+            callerName = callerName.replace(/ \(.+\)$/, ''); // Sanitize Chrome
+            callerName = callerName.replace(/\@.+/, ''); // Sanitize Firefox
+
+            // console.log(stackTrace);
+            console.log(callerName);
+        }
+
+        for (let i = 0; i < args.length; ++i)
+        {
+            // console.log(args[i]);
+        }
+
+    }
+
+
     public static createContainer(w, h)
     {
+        VirtualList.Trace(w, h);
+
         let c: HTMLElement = document.createElement('div');
         c.style.width = w;
         c.style.height = h;
@@ -148,6 +175,8 @@ class VirtualList
 
     public static createScroller(h)
     {
+        VirtualList.Trace(h);
+
         let scroller: HTMLElement = document.createElement('div');
         scroller.style.opacity = "0";
         scroller.style.position = 'absolute';
@@ -161,18 +190,20 @@ class VirtualList
 
     public createRow(i:number) 
     {
-        let item;
+        // VirtualList.Trace(i);
+
+        let item:HTMLElement;
 
         if (this.generatorFn)
             item = this.generatorFn(i);
-
         else if (this.items)
         {
             if (typeof this.items[i] === 'string')
             {
-                let itemText = document.createTextNode(this.items[i]);
                 item = document.createElement('div');
                 item.style.height = this.itemHeight + 'px';
+
+                let itemText = document.createTextNode(this.items[i]);
                 item.appendChild(itemText);
             }
             else
@@ -180,6 +211,8 @@ class VirtualList
                 item = this.items[i];
             }
         }
+
+        item.setAttribute("data-rowNr", i.toString());
 
         item.classList.add('vrow');
         item.style.position = 'absolute';
@@ -190,6 +223,8 @@ class VirtualList
 
     protected onScroll(e)
     {
+        VirtualList.Trace(e);
+
         let scrollTop = e.target.scrollTop; // Triggers reflow
         if (!this.m_lastRepaintY || Math.abs(scrollTop - this.m_lastRepaintY) > this.m_maxBuffer)
         {
@@ -203,8 +238,11 @@ class VirtualList
     } // End Sub onScroll 
 
 
+    /*
     protected removeUnusedNodes()
     {
+        VirtualList.Trace();
+
         if (Date.now() - this.m_lastScrolled > 100)
         {
             let badNodes = this.container.querySelectorAll('[data-rm="1"]');
@@ -216,7 +254,7 @@ class VirtualList
         }
 
     } // End Sub removeUnusedNodes 
-
+    */
 
     /**
      * Renders a particular, consecutive chunk of the total rows in the list. To
@@ -228,12 +266,32 @@ class VirtualList
      * @param {Number} from Starting position, i.e. first children index.
      * @return {void}
      */
-    protected renderChunk(node, from)
+    protected renderChunk(node:Element, from)
     {
-        debugger;
+        VirtualList.Trace(node, from);
+
         let finalItem = from + this.cachedItemsLen;
         if (finalItem > this.totalRows)
             finalItem = this.totalRows;
+
+        console.log("node:", node);
+        console.log("from", from);
+        console.log("finalItem", finalItem);
+
+        
+        for (let j = node.children.length - 1; j > 0; --j)
+        {
+            let ri = new Number(node.children[j].getAttribute("data-rowNr"));
+            if (ri < from || ri > finalItem)
+            {
+                node.removeChild(node.children[j]);
+                // (<HTMLElement>node.children[j]).style.display = 'none';
+                // node.children[j].setAttribute('data-rm', '1');
+            }
+
+        }
+
+
 
         // Append all the new rows in a document fragment that we will later append to
         // the parent node
@@ -242,13 +300,15 @@ class VirtualList
         {
             fragment.appendChild(this.createRow(i));
         } // Next i 
-
+        
+        /*
         // Hide and mark obsolete nodes for deletion.
         for (let j = 1, l = node.childNodes.length; j < l; j++)
         {
             node.childNodes[j].style.display = 'none';
             node.childNodes[j].setAttribute('data-rm', '1');
         } // next j 
+        */
 
         node.appendChild(fragment);
     } // End Function renderChunk 

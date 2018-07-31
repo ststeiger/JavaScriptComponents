@@ -99,9 +99,22 @@
     <Content Include="switzerland\swiss.svg" />
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
+    <Content Include="ts\mylist.js" />
     <Content Include="TypeScript\jqvscroll.ts" />
     <Content Include="TypeScript\mklink.txt" />
     <Content Include="uk\index.html" />
+    <Content Include="virtualRendering\COR.Dialogue.css" />
+    <Content Include="virtualRendering\COR.Element.js" />
+    <Content Include="virtualRendering\girdspan3.htm" />
+    <Content Include="virtualRendering\gridspan2.htm" />
+    <Content Include="virtualRendering\myflex_old.htm" />
+    <Content Include="virtualRendering\myflex.htm" />
+    <Content Include="virtualRendering\gridspan.htm" />
+    <Content Include="virtualRendering\mylist.htm" />
+    <Content Include="virtualRendering\COR.Dialogue.Filter.js" />
+    <Content Include="virtualRendering\COR.Dialogue.js" />
+    <Content Include="virtualRendering\COR.htm" />
+    <Content Include="virtualRendering\vlist.js" />
     <Content Include="virtualRendering\jqvscroll.htm" />
     <Content Include="virtualRendering\react_depends\babel.min.js" />
     <Content Include="virtualRendering\react_depends\react-dom.min.js" />
@@ -167,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="TypeScript\hyperlist.ts" />
+    <TypeScriptCompile Include="TypeScript\mylist.ts" />
     <TypeScriptCompile Include="TypeScript\vlist.ts" />
   </ItemGroup>
   <ItemGroup>

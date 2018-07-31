@@ -3,7 +3,6 @@ class VirtualList {
     constructor(config) {
         this.createRow = this.createRow.bind(this);
         this.renderChunk = this.renderChunk.bind(this);
-        this.removeUnusedNodes = this.removeUnusedNodes.bind(this);
         this.onScroll = this.onScroll.bind(this);
         let width = (config && config.w + 'px') || '100%';
         let height = (config && config.h + 'px') || '100%';
@@ -19,10 +18,23 @@ class VirtualList {
         this.container.appendChild(scroller);
         this.cachedItemsLen = this.m_screenItemsLen * 3;
         this.renderChunk(this.container, 0);
-        this.rmNodeInterval = setInterval(this.removeUnusedNodes, 300);
         this.container.addEventListener('scroll', this.onScroll);
     }
+    static Trace(...args) {
+        let stackTrace = (new Error()).stack;
+        if (stackTrace) {
+            let callerName = stackTrace.replace(/^Error\s+/, '');
+            callerName = callerName.split("\n")[1];
+            callerName = callerName.replace(/^\s+at Object./, '');
+            callerName = callerName.replace(/ \(.+\)$/, '');
+            callerName = callerName.replace(/\@.+/, '');
+            console.log(callerName);
+        }
+        for (let i = 0; i < args.length; ++i) {
+        }
+    }
     static createContainer(w, h) {
+        VirtualList.Trace(w, h);
         let c = document.createElement('div');
         c.style.width = w;
         c.style.height = h;
@@ -33,6 +45,7 @@ class VirtualList {
         return c;
     }
     static createScroller(h) {
+        VirtualList.Trace(h);
         let scroller = document.createElement('div');
         scroller.style.opacity = "0";
         scroller.style.position = 'absolute';
@@ -48,21 +61,23 @@ class VirtualList {
             item = this.generatorFn(i);
         else if (this.items) {
             if (typeof this.items[i] === 'string') {
-                let itemText = document.createTextNode(this.items[i]);
                 item = document.createElement('div');
                 item.style.height = this.itemHeight + 'px';
+                let itemText = document.createTextNode(this.items[i]);
                 item.appendChild(itemText);
             }
             else {
                 item = this.items[i];
             }
         }
+        item.setAttribute("data-rowNr", i.toString());
         item.classList.add('vrow');
         item.style.position = 'absolute';
         item.style.top = (i * this.itemHeight) + 'px';
         return item;
     }
     onScroll(e) {
+        VirtualList.Trace(e);
         let scrollTop = e.target.scrollTop;
         if (!this.m_lastRepaintY || Math.abs(scrollTop - this.m_lastRepaintY) > this.m_maxBuffer) {
             let first = parseInt((scrollTop / this.itemHeight)) - this.m_screenItemsLen;
@@ -72,26 +87,23 @@ class VirtualList {
         this.m_lastScrolled = Date.now();
         e.preventDefault && e.preventDefault();
     }
-    removeUnusedNodes() {
-        if (Date.now() - this.m_lastScrolled > 100) {
-            let badNodes = this.container.querySelectorAll('[data-rm="1"]');
-            for (let i = 0, l = badNodes.length; i < l; i++) {
-                this.container.removeChild(badNodes[i]);
-            }
-        }
-    }
     renderChunk(node, from) {
-        debugger;
+        VirtualList.Trace(node, from);
         let finalItem = from + this.cachedItemsLen;
         if (finalItem > this.totalRows)
             finalItem = this.totalRows;
+        console.log("node:", node);
+        console.log("from", from);
+        console.log("finalItem", finalItem);
+        for (let j = node.children.length - 1; j > 0; --j) {
+            let ri = new Number(node.children[j].getAttribute("data-rowNr"));
+            if (ri < from || ri > finalItem) {
+                node.removeChild(node.children[j]);
+            }
+        }
         let fragment = document.createDocumentFragment();
         for (let i = from; i < finalItem; i++) {
             fragment.appendChild(this.createRow(i));
-        }
-        for (let j = 1, l = node.childNodes.length; j < l; j++) {
-            node.childNodes[j].style.display = 'none';
-            node.childNodes[j].setAttribute('data-rm', '1');
         }
         node.appendChild(fragment);
     }

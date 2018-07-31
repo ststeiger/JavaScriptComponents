@@ -27,6 +27,16 @@ let viewport, content;
 
 function autoRun() 
 {
+    // Polyfill
+    if (!('remove' in Element.prototype))
+    {
+        Element.prototype.remove = function ()
+        {
+            this.parentNode.removeChild(this);
+        };
+    }
+
+
     viewport = document.getElementById("viewport");
     content = document.getElementById("content");
 
@@ -115,6 +125,8 @@ function renderViewport()
     {
         if (<number><any>i < top || <number><any>i > bottom) 
         {
+            console.log(rows[i].__proto__)
+
             rows[i].remove();
             delete rows[i];
         }
@@ -182,6 +194,7 @@ function logDebugInfo()
     dbg.appendChild(df);
 
 
+    /*
     console.log("n", n);
     console.log("ph", ph);
     console.log("cj", cj);
@@ -189,6 +202,7 @@ function logDebugInfo()
     console.log("real y = " + prevScrollTop);
 
     console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
+    */
 }
 
 

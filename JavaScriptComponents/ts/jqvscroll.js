@@ -11,6 +11,11 @@ var prevScrollTop = 0;
 var rows = {};
 var viewport, content;
 function autoRun() {
+    if (!('remove' in Element.prototype)) {
+        Element.prototype.remove = function () {
+            this.parentNode.removeChild(this);
+        };
+    }
     viewport = document.getElementById("viewport");
     content = document.getElementById("content");
     viewport.style.height = vp + "px";
@@ -63,6 +68,7 @@ function renderViewport() {
     bottom = Math.min(th / rh, bottom);
     for (var i in rows) {
         if (i < top || i > bottom) {
+            console.log(rows[i].__proto__);
             rows[i].remove();
             delete rows[i];
         }
@@ -103,10 +109,4 @@ function logDebugInfo() {
         .append("real y = " + prevScrollTop)
         .append("rows in the DOM = " + [].slice.call(document.querySelectorAll(".row")).length);
     dbg.appendChild(df);
-    console.log("n", n);
-    console.log("ph", ph);
-    console.log("cj", cj);
-    console.log("virtual y = ", (prevScrollTop + offset));
-    console.log("real y = " + prevScrollTop);
-    console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
 }
