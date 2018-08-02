@@ -105,6 +105,7 @@
     <Content Include="uk\index.html" />
     <Content Include="virtualRendering\COR.Dialogue.css" />
     <Content Include="virtualRendering\COR.Element.js" />
+    <Content Include="virtualRendering\Grid.png" />
     <Content Include="virtualRendering\gridspan5.htm" />
     <Content Include="virtualRendering\gridspan4.htm" />
     <Content Include="virtualRendering\gridspan3.htm" />
