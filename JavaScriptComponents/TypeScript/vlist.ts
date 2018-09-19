@@ -252,7 +252,7 @@ class VirtualList
                 this.container.removeChild(badNodes[i]);
             } // Next i 
         }
-
+        
     } // End Sub removeUnusedNodes 
     */
 
