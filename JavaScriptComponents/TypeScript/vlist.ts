@@ -96,7 +96,7 @@ class VirtualList
     constructor(config: IConfig | IConfigDebug) 
     {
         this.createRow = this.createRow.bind(this);
-        this.renderChunk = this.renderChunk.bind(this)
+        this.renderChunk = this.renderChunk.bind(this);
         // this.removeUnusedNodes = this.removeUnusedNodes.bind(this)
         this.onScroll = this.onScroll.bind(this);
         
@@ -281,18 +281,17 @@ class VirtualList
         
         for (let j = node.children.length - 1; j > 0; --j)
         {
-            let ri = new Number(node.children[j].getAttribute("data-rowNr"));
+            let ri = new Number( node.children[j].getAttribute("data-rowNr") );
             if (ri < from || ri > finalItem)
             {
                 node.removeChild(node.children[j]);
                 // (<HTMLElement>node.children[j]).style.display = 'none';
                 // node.children[j].setAttribute('data-rm', '1');
             }
-
-        }
-
-
-
+            
+        } // Next j 
+        
+        
         // Append all the new rows in a document fragment that we will later append to
         // the parent node
         let fragment = document.createDocumentFragment();

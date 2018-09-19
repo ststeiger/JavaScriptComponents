@@ -100,6 +100,7 @@
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
     <Content Include="ts\mylist.js" />
+    <Content Include="TypeScript\cscroll.ts" />
     <Content Include="TypeScript\jqvscroll.ts" />
     <Content Include="TypeScript\mklink.txt" />
     <Content Include="uk\index.html" />
