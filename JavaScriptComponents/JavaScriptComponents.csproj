@@ -112,6 +112,7 @@
     <Content Include="virtualRendering\gridspan3.htm" />
     <Content Include="virtualRendering\gridspan2.htm" />
     <Content Include="virtualRendering\gridspan6.htm" />
+    <Content Include="virtualRendering\cscroll.htm" />
     <Content Include="virtualRendering\myflex_old.htm" />
     <Content Include="virtualRendering\myflex.htm" />
     <Content Include="virtualRendering\gridspan.htm" />

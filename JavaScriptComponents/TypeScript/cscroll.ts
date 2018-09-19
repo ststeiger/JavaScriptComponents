@@ -26,29 +26,27 @@ interface IDebugInterface
 }
 
 
-class mofa
+class VirtualRenderer 
 {
-
-    private th = 1000000000;            // virtual height
-    private h = 1000000;                // real scrollable height
-    private ph = h / 100;               // page height
-    private n = Math.ceil(th / ph);     // number of pages
-    private vp = 400;                   // viewport height
-    private rh = 50;                    // row height
-    private cj = (th - h) / (n - 1);    // "jumpiness" coefficient
-
-    private page = 0;                   // current page
-    private offset = 0;                 // current page offset
-    private prevScrollTop = 0;
-
-    private rows = {};                  // cached row nodes
+    private rows; // cached row nodes
     private viewport;
     private content;
 
+    private page;    // current page
+    private offset; // current page offset
+    private prevScrollTop;
 
 
+    private th;       // virtual height
+    private h;       // real scrollable height
+    private ph;     // page height
+    private n;     // number of pages
+    private vp;   // viewport height
+    private rh;  // row height
+    private cj; // "jumpiness" coefficient
 
-    private autoRun()
+
+    constructor()
     {
         // Polyfill
         if (!('remove' in Element.prototype))
@@ -58,75 +56,95 @@ class mofa
                 this.parentNode.removeChild(this);
             };
         }
-    
+        // End Polyfill
+
+        this.rows = {};
+        this.page = 0;    // current page
+        this.offset = 0; // current page offset
+        this.prevScrollTop = 0;
+
+        this.th = 1000000000; // virtual height
+        this.h = 1000000; // real scrollable height
+        this.ph = this.h / 100; // page height
+        this.n = Math.ceil(this.th / this.ph); // number of pages
+        this.vp = 400; // viewport height
+        this.rh = 50; // row height
+        this.cj = (this.th - this.h) / (this.n - 1); // "jumpiness" coefficient
+
+        this.onScroll.bind(this);
+        this.onNearScroll.bind(this);
+        this.onJump.bind(this);
+        this.removeAllRows.bind(this);
+        this.renderViewport.bind(this);
+        this.renderRow.bind(this);
+        this.logDebugInfo.bind(this);
+
         this.viewport = document.getElementById("viewport");
         this.content = document.getElementById("content");
 
-        this.viewport.style.height = vp + "px";
-        this.content.style.height = h + "px";
+        this.viewport.style.height = this.vp + "px";
+        this.content.style.height = this.h + "px";
 
-        this.viewport.addEventListener("scroll", onScroll);
+        this.viewport.addEventListener("scroll", this.onScroll);
         this.onScroll();
     }
-    
+
     
     private onScroll()
     {
-        let scrollTop = viewport.scrollTop;
-    
-        if (Math.abs(scrollTop - prevScrollTop) > vp)
-            onJump();
+        if (Math.abs(this.viewport.scrollTop - this.prevScrollTop) > this.vp)
+            this.onJump();
         else
-            onNearScroll();
+            this.onNearScroll();
     
-        renderViewport();
-        logDebugInfo();
+        this.renderViewport();
+        this.logDebugInfo();
     }
 
     private onNearScroll()
     {
-        let scrollTop = viewport.scrollTop;
+        let scrollTop = this.viewport.scrollTop;
     
         // next page
-        if (scrollTop + offset > (page + 1) * ph)
+        if (scrollTop + this.offset > (this.page + 1) * this.ph)
         {
-            page++;
-            offset = Math.round(page * cj);
+            this.page++;
+            this.offset = Math.round(this.page * this.cj);
     
-            viewport.scrollTop = prevScrollTop = scrollTop - cj;
+            this.viewport.scrollTop = this.prevScrollTop = scrollTop - this.cj;
     
-            removeAllRows();
+            this.removeAllRows();
         }
         // prev page
-        else if (scrollTop + offset < page * ph)
+        else if (scrollTop + this.offset < this.page * this.ph)
         {
-            page--;
-            offset = Math.round(page * cj);
-            viewport.scrollTop = prevScrollTop = scrollTop + cj;
-            removeAllRows();
+            this.page--;
+            this.offset = Math.round(this.page * this.cj);
+            this.viewport.scrollTop = this.prevScrollTop = scrollTop + this.cj;
+            this.removeAllRows();
         }
         else
-            prevScrollTop = scrollTop;
+            this.prevScrollTop = scrollTop;
     }
 
 
     private onJump()
     {
-        let scrollTop = viewport.scrollTop;
-        page = Math.floor(scrollTop * ((th - vp) / (h - vp)) * (1 / ph));
-        offset = Math.round(page * cj);
-        prevScrollTop = scrollTop;
+        let scrollTop = this.viewport.scrollTop;
+        this.page = Math.floor(scrollTop * ((this.th - this.vp) / (this.h - this.vp)) * (1 / this.ph));
+        this.offset = Math.round(this.page * this.cj);
+        this.prevScrollTop = scrollTop;
     
-        removeAllRows();
+        this.removeAllRows();
     }
 
 
     private removeAllRows()
     {
-        for (let i in rows)
+        for (let i in this.rows)
         {
-            rows[i].remove();
-            delete rows[i];
+            this.rows[i].remove();
+            delete this.rows[i];
         }
     }
 
@@ -134,31 +152,31 @@ class mofa
     private renderViewport()
     {
         // calculate the viewport + buffer
-        let y = viewport.scrollTop + offset,
-            buffer = vp,
-            top = Math.floor((y - buffer) / rh),
-            bottom = Math.ceil((y + vp + buffer) / rh);
+        let y = this.viewport.scrollTop + this.offset,
+            buffer = this.vp,
+            top = Math.floor((y - buffer) / this.rh),
+            bottom = Math.ceil((y + this.vp + buffer) / this.rh);
     
         top = Math.max(0, top);
-        bottom = Math.min(th / rh, bottom);
+        bottom = Math.min(this.th / this.rh, bottom);
     
         // remove rows no longer in the viewport
-        for (let i in rows)
+        for (let i in this.rows)
         {
             if (<number><any>i < top || <number><any>i > bottom)
             {
-                console.log(rows[i].__proto__);
+                console.log(this.rows[i].__proto__);
     
-                rows[i].remove();
-                delete rows[i];
+                this.rows[i].remove();
+                delete this.rows[i];
             }
         }
     
         // add new rows
         for (let i = top; i <= bottom; i++)
         {
-            if (!rows[i])
-                rows[i] = renderRow(i);
+            if (!this.rows[i])
+                this.rows[i] = this.renderRow(i);
         }
     }
 
@@ -167,12 +185,12 @@ class mofa
     {
         let div = document.createElement("div");
         div.setAttribute("class", "row");
-        div.style.top = (row * rh - offset) + "px";
-        div.style.height = rh + "px";
+        div.style.top = (row * this.rh - this.offset) + "px";
+        div.style.height = this.rh + "px";
         let text = document.createTextNode("row " + (row + 1));
         div.appendChild(text);
     
-        content.appendChild(div);
+        this.content.appendChild(div);
     
         return div;
     }
@@ -196,30 +214,27 @@ class mofa
         };
     
     
-        df.append("n = " + n)
-            .append("ph = " + ph)
-            .append("cj = " + cj)
+        df.append("n = " + this.n)
+            .append("ph = " + this.ph)
+            .append("cj = " + this.cj)
         ;
     
         df.appendChild(document.createElement("hr"));
     
-        df.append("page = " + page)
-            .append("offset = " + offset)
-            .append("virtual y = " + (prevScrollTop + offset))
-            .append("real y = " + prevScrollTop)
+        df.append("page = " + this.page)
+            .append("offset = " + this.offset)
+            .append("virtual y = " + (this.prevScrollTop + this.offset))
+            .append("real y = " + this.prevScrollTop)
             .append("rows in the DOM = " + [].slice.call(document.querySelectorAll(".row")).length);
         dbg.appendChild(df);
-    
-    
-        /*
-        console.log("n", n);
-        console.log("ph", ph);
-        console.log("cj", cj);
-        console.log("virtual y = ", (prevScrollTop + offset));
-        console.log("real y = " + prevScrollTop);
-    
-        console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
-        */
+
+        // console.log("n", this.n);
+        // console.log("ph", this.ph);
+        // console.log("cj", this.cj);
+        // console.log("virtual y = ", (this.prevScrollTop + this.offset));
+        // console.log("real y = " + this.prevScrollTop);
+
+        // console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
     }
     
     
