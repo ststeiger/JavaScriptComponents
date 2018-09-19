@@ -194,15 +194,15 @@ function logDebugInfo()
     dbg.appendChild(df);
 
 
-    /*
-    console.log("n", n);
-    console.log("ph", ph);
-    console.log("cj", cj);
-    console.log("virtual y = ", (prevScrollTop + offset));
-    console.log("real y = " + prevScrollTop);
 
-    console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
-    */
+    // console.log("n", n);
+    // console.log("ph", ph);
+    // console.log("cj", cj);
+    // console.log("virtual y = ", (prevScrollTop + offset));
+    // console.log("real y = " + prevScrollTop);
+
+    // console.log("rows in the DOM = ", Array.prototype.slice.call(document.querySelectorAll(".row")).length);
+    
 }
 
 
