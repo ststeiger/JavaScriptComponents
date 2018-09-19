@@ -88,6 +88,7 @@
     <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
     <Content Include="index.htm" />
+    <Content Include="js\cscroll.js" />
     <Content Include="js\hyperlist.js" />
     <Content Include="js\jqvscroll.js" />
     <Content Include="js\vlist.js" />
@@ -99,6 +100,8 @@
     <Content Include="switzerland\swiss.svg" />
     <Content Include="switzerland\thumbnail.png" />
     <Content Include="switzerland\topojson.v1.min.js" />
+    <Content Include="ts2015\cscroll.js" />
+    <Content Include="ts\cscroll.js" />
     <Content Include="ts\mylist.js" />
     <Content Include="TypeScript\cscroll.ts" />
     <Content Include="TypeScript\jqvscroll.ts" />

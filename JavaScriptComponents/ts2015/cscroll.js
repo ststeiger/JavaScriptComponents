@@ -1,6 +1,6 @@
 "use strict";
-class VirtualRenderer {
-    constructor() {
+var VirtualRenderer = (function () {
+    function VirtualRenderer() {
         if (!('remove' in Element.prototype)) {
             (Element.prototype).remove = function () {
                 this.parentNode.removeChild(this);
@@ -31,16 +31,16 @@ class VirtualRenderer {
         this.viewport.addEventListener("scroll", this.onScroll);
         this.onScroll();
     }
-    onScroll() {
+    VirtualRenderer.prototype.onScroll = function () {
         if (Math.abs(this.viewport.scrollTop - this.prevScrollTop) > this.vp)
             this.onJump();
         else
             this.onNearScroll();
         this.renderViewport();
         this.logDebugInfo();
-    }
-    onNearScroll() {
-        let scrollTop = this.viewport.scrollTop;
+    };
+    VirtualRenderer.prototype.onNearScroll = function () {
+        var scrollTop = this.viewport.scrollTop;
         if (scrollTop + this.offset > (this.page + 1) * this.ph) {
             this.page++;
             this.offset = Math.round(this.page * this.cj);
@@ -55,54 +55,54 @@ class VirtualRenderer {
         }
         else
             this.prevScrollTop = scrollTop;
-    }
-    onJump() {
-        let scrollTop = this.viewport.scrollTop;
+    };
+    VirtualRenderer.prototype.onJump = function () {
+        var scrollTop = this.viewport.scrollTop;
         this.page = Math.floor(scrollTop * ((this.th - this.vp) / (this.h - this.vp)) * (1 / this.ph));
         this.offset = Math.round(this.page * this.cj);
         this.prevScrollTop = scrollTop;
         this.removeAllRows();
-    }
-    removeAllRows() {
-        for (let i in this.rows) {
+    };
+    VirtualRenderer.prototype.removeAllRows = function () {
+        for (var i in this.rows) {
             this.rows[i].remove();
             delete this.rows[i];
         }
-    }
-    renderViewport() {
-        let y = this.viewport.scrollTop + this.offset, buffer = this.vp, top = Math.floor((y - buffer) / this.rh), bottom = Math.ceil((y + this.vp + buffer) / this.rh);
+    };
+    VirtualRenderer.prototype.renderViewport = function () {
+        var y = this.viewport.scrollTop + this.offset, buffer = this.vp, top = Math.floor((y - buffer) / this.rh), bottom = Math.ceil((y + this.vp + buffer) / this.rh);
         top = Math.max(0, top);
         bottom = Math.min(this.th / this.rh, bottom);
-        for (let i in this.rows) {
+        for (var i in this.rows) {
             if (i < top || i > bottom) {
                 console.log(this.rows[i].__proto__);
                 this.rows[i].remove();
                 delete this.rows[i];
             }
         }
-        for (let i = top; i <= bottom; i++) {
+        for (var i = top; i <= bottom; i++) {
             if (!this.rows[i])
                 this.rows[i] = this.renderRow(i);
         }
-    }
-    renderRow(row) {
-        let div = document.createElement("div");
+    };
+    VirtualRenderer.prototype.renderRow = function (row) {
+        var div = document.createElement("div");
         div.setAttribute("class", "row");
         div.style.top = (row * this.rh - this.offset) + "px";
         div.style.height = this.rh + "px";
-        let text = document.createTextNode("row " + (row + 1));
+        var text = document.createTextNode("row " + (row + 1));
         div.appendChild(text);
         this.content.appendChild(div);
         return div;
-    }
-    logDebugInfo() {
-        let dbg = document.getElementById("debug");
+    };
+    VirtualRenderer.prototype.logDebugInfo = function () {
+        var dbg = document.getElementById("debug");
         dbg.innerHTML = "";
-        let df = document.createDocumentFragment();
+        var df = document.createDocumentFragment();
         df.append = function (txt) {
-            let tn = document.createTextNode(txt);
+            var tn = document.createTextNode(txt);
             df.appendChild(tn);
-            let br = document.createElement("br");
+            var br = document.createElement("br");
             df.appendChild(br);
             return df;
         };
@@ -116,5 +116,6 @@ class VirtualRenderer {
             .append("real y = " + this.prevScrollTop)
             .append("rows in the DOM = " + [].slice.call(document.querySelectorAll(".row")).length);
         dbg.appendChild(df);
-    }
-}
+    };
+    return VirtualRenderer;
+}());

@@ -48,6 +48,7 @@ class VirtualRenderer
 
     constructor()
     {
+        alert("hello");
         // Polyfill
         if (!('remove' in Element.prototype))
         {
@@ -71,13 +72,13 @@ class VirtualRenderer
         this.rh = 50; // row height
         this.cj = (this.th - this.h) / (this.n - 1); // "jumpiness" coefficient
 
-        this.onScroll.bind(this);
-        this.onNearScroll.bind(this);
-        this.onJump.bind(this);
-        this.removeAllRows.bind(this);
-        this.renderViewport.bind(this);
-        this.renderRow.bind(this);
-        this.logDebugInfo.bind(this);
+        this.onScroll = this.onScroll.bind(this);
+        this.onNearScroll = this.onNearScroll.bind(this);
+        this.onJump = this.onJump.bind(this);
+        this.removeAllRows = this.removeAllRows.bind(this);
+        this.renderViewport = this.renderViewport.bind(this);
+        this.renderRow = this.renderRow.bind(this);
+        this.logDebugInfo = this.logDebugInfo.bind(this);
 
         this.viewport = document.getElementById("viewport");
         this.content = document.getElementById("content");
