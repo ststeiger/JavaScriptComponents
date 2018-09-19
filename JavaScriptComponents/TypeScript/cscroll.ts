@@ -1,5 +1,4 @@
 
-
 "use strict";
 
 
@@ -31,12 +30,12 @@ class VirtualRenderer
     private rows; // cached row nodes
     private viewport;
     private content;
-
+    
     private page;    // current page
     private offset; // current page offset
     private prevScrollTop;
-
-
+    
+    
     private th;       // virtual height
     private h;       // real scrollable height
     private ph;     // page height
@@ -44,11 +43,10 @@ class VirtualRenderer
     private vp;   // viewport height
     private rh;  // row height
     private cj; // "jumpiness" coefficient
-
-
+    
+    
     constructor()
     {
-        alert("hello");
         // Polyfill
         if (!('remove' in Element.prototype))
         {
@@ -58,12 +56,13 @@ class VirtualRenderer
             };
         }
         // End Polyfill
-
+        
+        
         this.rows = {};
         this.page = 0;    // current page
         this.offset = 0; // current page offset
         this.prevScrollTop = 0;
-
+        
         this.th = 1000000000; // virtual height
         this.h = 1000000; // real scrollable height
         this.ph = this.h / 100; // page height
@@ -71,7 +70,7 @@ class VirtualRenderer
         this.vp = 400; // viewport height
         this.rh = 50; // row height
         this.cj = (this.th - this.h) / (this.n - 1); // "jumpiness" coefficient
-
+        
         this.onScroll = this.onScroll.bind(this);
         this.onNearScroll = this.onNearScroll.bind(this);
         this.onJump = this.onJump.bind(this);
@@ -79,17 +78,17 @@ class VirtualRenderer
         this.renderViewport = this.renderViewport.bind(this);
         this.renderRow = this.renderRow.bind(this);
         this.logDebugInfo = this.logDebugInfo.bind(this);
-
+        
         this.viewport = document.getElementById("viewport");
         this.content = document.getElementById("content");
-
+        
         this.viewport.style.height = this.vp + "px";
         this.content.style.height = this.h + "px";
-
+        
         this.viewport.addEventListener("scroll", this.onScroll);
         this.onScroll();
     }
-
+    
     
     private onScroll()
     {
@@ -101,7 +100,8 @@ class VirtualRenderer
         this.renderViewport();
         this.logDebugInfo();
     }
-
+    
+    
     private onNearScroll()
     {
         let scrollTop = this.viewport.scrollTop;
@@ -127,8 +127,8 @@ class VirtualRenderer
         else
             this.prevScrollTop = scrollTop;
     }
-
-
+    
+    
     private onJump()
     {
         let scrollTop = this.viewport.scrollTop;
@@ -138,8 +138,8 @@ class VirtualRenderer
     
         this.removeAllRows();
     }
-
-
+    
+    
     private removeAllRows()
     {
         for (let i in this.rows)
@@ -148,8 +148,8 @@ class VirtualRenderer
             delete this.rows[i];
         }
     }
-
-
+    
+    
     private renderViewport()
     {
         // calculate the viewport + buffer
@@ -180,8 +180,8 @@ class VirtualRenderer
                 this.rows[i] = this.renderRow(i);
         }
     }
-
-
+    
+    
     private renderRow(row)
     {
         let div = document.createElement("div");
