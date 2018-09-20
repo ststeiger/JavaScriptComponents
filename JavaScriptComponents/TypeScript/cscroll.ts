@@ -27,24 +27,24 @@ interface IDebugInterface
 
 class VirtualRenderer 
 {
-    private rows; // cached row nodes
-    private viewport;
-    private content;
+    protected rows; // cached row nodes
+    protected viewport;
+    protected content;
     
-    private page;    // current page
-    private offset; // current page offset
-    private prevScrollTop;
-    
-    
-    private th;       // virtual height
-    private h;       // real scrollable height
-    private ph;     // page height
-    private n;     // number of pages
-    private vp;   // viewport height
-    private rh;  // row height
-    private cj; // "jumpiness" coefficient
+    protected page;    // current page
+    protected offset; // current page offset
+    protected prevScrollTop;
     
     
+    protected th;       // virtual height
+    protected h;       // real scrollable height
+    protected ph;     // page height
+    protected n;     // number of pages
+    protected vp;   // viewport height
+    protected rh;  // row height
+    protected cj; // "jumpiness" coefficient
+
+
     constructor()
     {
         // Polyfill
@@ -57,18 +57,39 @@ class VirtualRenderer
         }
         // End Polyfill
         
-        
-        this.rows = {};
+
+        // https://medium.com/@manju_reddys/rendering-array-of-billion-of-records-at-60-f-s-in-angular-or-vanilla-js-2613e5983a10
+        // https://jsfiddle.net/SDa2B/293
+
+
+        this.rows = {}; // cached rows stored for removal 
         this.page = 0;    // current page
         this.offset = 0; // current page offset
         this.prevScrollTop = 0;
         
-        this.th = 1000000000; // virtual height
-        this.h = 1000000; // real scrollable height
-        this.ph = this.h / 100; // page height
+        this.th = 1000000000; // virtual height = numItems * rowHeight
+
+        // (virtual height/ width is = all dom elements would have fit if browser have no limits)
+        // <= browser pixel scroll limit
+        // Height limitations for browser vertical scroll bar
+        // FF: 17895697px, IE: 10737418px, Chrome: 33554400px
+        // this will give you a height of the scrollbar.
+        // The scrollHeight is a read only property that contain the total height of element content in pixels.
+        this.h = 1000000; // real scrollable height = document.getElementById("viewport").scrollHeight
+
+        // n = 100 = number of pages
+        this.ph = this.h / 100; // page height 
         this.n = Math.ceil(this.th / this.ph); // number of pages
-        this.vp = 400; // viewport height
+
+        this.vp = 400; // viewport height = document.getElementById("viewport").offsetHeight - border 
         this.rh = 50; // row height
+        
+
+
+        // The overlap between pages is (cj) and is the distance the scrollbar
+        // will jump when we adjust the scroll position during page switch.
+        // To keep things smooth, we need to minimize both (n) and (cj).
+        // Setting(ph) at 1/ 100 of (h) is a good start.
         this.cj = (this.th - this.h) / (this.n - 1); // "jumpiness" coefficient
         
         this.onScroll = this.onScroll.bind(this);

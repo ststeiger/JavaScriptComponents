@@ -17,7 +17,6 @@ var VirtualRenderer = (function () {
         this.vp = 400;
         this.rh = 50;
         this.cj = (this.th - this.h) / (this.n - 1);
-
         this.onScroll = this.onScroll.bind(this);
         this.onNearScroll = this.onNearScroll.bind(this);
         this.onJump = this.onJump.bind(this);
@@ -25,7 +24,6 @@ var VirtualRenderer = (function () {
         this.renderViewport = this.renderViewport.bind(this);
         this.renderRow = this.renderRow.bind(this);
         this.logDebugInfo = this.logDebugInfo.bind(this);
-
         this.viewport = document.getElementById("viewport");
         this.content = document.getElementById("content");
         this.viewport.style.height = this.vp + "px";
