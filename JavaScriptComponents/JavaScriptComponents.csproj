@@ -87,6 +87,8 @@
     <Content Include="ajax\Data.ashx" />
     <Content Include="dateHandling\DateFormatInfo.sql" />
     <Content Include="dateHandling\info.txt" />
+    <Content Include="grid\grid1.htm" />
+    <Content Include="grid\sticky_columns_and_header.htm" />
     <Content Include="index.htm" />
     <Content Include="js\cscroll.js" />
     <Content Include="js\hyperlist.js" />
