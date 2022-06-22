@@ -125,6 +125,7 @@
     <Content Include="virtualRendering\COR.Dialogue.Filter.js" />
     <Content Include="virtualRendering\COR.Dialogue.js" />
     <Content Include="virtualRendering\COR.htm" />
+    <Content Include="virtualRendering\nonvirtual_sticky.htm" />
     <Content Include="virtualRendering\vlist.js" />
     <Content Include="virtualRendering\jqvscroll.htm" />
     <Content Include="virtualRendering\react_depends\babel.min.js" />
